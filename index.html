@@ -1350,6 +1350,32 @@ h3{font-weight:700;letter-spacing:-.02em}
 @keyframes dGrowX{from{width:0}}
 
 </style>
+<style id="v22">
+/* =================== v22 : bilan calorique (onglet Nutrition) =================== */
+.bl-top{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:6px}
+.bl-c{display:flex;flex-direction:column;min-width:0}
+.bl-l{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:5px;align-items:center;white-space:nowrap}
+.bl-l .ic{color:var(--accent);flex:none}
+.bl-c b{font-family:var(--display);font-weight:800;font-size:clamp(19px,6.2vw,28px);letter-spacing:-.045em;line-height:1.1;margin-top:6px;white-space:nowrap}
+.bl-c small{font-size:11px;color:var(--muted)}
+.bl-op{font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink-3);padding-bottom:17px}
+.bl-res.good b{color:var(--accent);text-shadow:0 0 18px rgba(43,255,136,.45)}
+.bl-res.over b{color:var(--warn)}
+.bl-bars{display:grid;gap:8px;margin-top:16px}
+.bl-bar{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;align-items:center;font-size:12px;color:var(--muted)}
+.bl-bar i{height:10px;border-radius:99px;background:var(--surface);overflow:hidden;display:block}
+.bl-bar u{display:block;height:100%;border-radius:inherit;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bl-bar u.in{background:linear-gradient(90deg,#5B8DFF,#9DB8FF)}
+.bl-bar u.out{background:linear-gradient(90deg,var(--accent),#9DFFC9);box-shadow:0 0 10px var(--accent)}
+.bl-det{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px;display:grid;gap:7px}
+.bl-det div{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}
+.bl-det div span{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.bl-det div span .ic{color:var(--accent);flex:none}
+.bl-det b{color:var(--fg);font-family:var(--mono);font-weight:500;white-space:nowrap}
+.bl-det .bl-tot{border-top:1px solid var(--line);padding-top:7px;color:var(--fg);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.enter .bl-bar u{animation:dGrowX .9s cubic-bezier(.2,.8,.2,1) both}}
+.card>h2>.small{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
+</style>
 <div id="rp-lock" hidden><div class="rl-in">
 <img src="icon-192.png" alt="" width="84" height="84" class="rl-logo">
 <h1>DO IT<span>PIERRE</span></h1>
@@ -1387,7 +1413,7 @@ h3{font-weight:700;letter-spacing:-.02em}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261019095317';
+var LSK='rp-vault-key',BUILD='20261019101344';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -4697,6 +4723,61 @@ function render(enter,dir){
   const m=$('#main'),prevH=m.querySelector(':scope>#doitH'),V={
     home:()=>{const h=homeFix(vHome()),i=h.indexOf('</section>')+10;return soberCard()+h.slice(0,i)+appsDock()+h.slice(i)+photosCard()+(S.settings.installDone?'':installCard(true))},
     food:()=>{const v=vFood(),i=v.indexOf('</section>',v.indexOf('</section>')+10)+10;return (window.RP_STANDALONE?'':photoCard())+v.slice(0,i)+transitCard()+v.slice(i)+menusCard()},sport:vSport,hyg:vHyg,beer:vSober,traceo:vTraceo,
+    photos:()=>impHub()+vPhotos().replace(/<div class="next" style="margin-top:10px;font-size:12.5px">Jusqu'à 600 photos[^<]*<\/div>/,''),
+    budget:()=>{const b=vBudget(),i=b.indexOf('</section>')+10;return b.slice(0,i)+bplanCard()+b.slice(i)+bankCard()},
+    todo:vTodo};
+  TRC.clear();
+  m.innerHTML=doitHead(S.tab)+(V[S.tab]||V.home)();
+  if(!enter&&prevH&&prevH.dataset.tab===S.tab){const nh=m.querySelector(':scope>#doitH');if(nh)nh.replaceWith(prevH)}else diReady();
+  S.flash=null;wireLazy(m);trWire(m);if(typeof zWire==='function')zWire(m);diWire(m);
+  if(enter){m.classList.remove('enter','from-r','from-l');void m.offsetWidth;m.classList.add('enter');if(dir)m.classList.add('from-'+dir);[...m.children].forEach((c,i)=>c.style.setProperty('--i',i));countUp(m);clearTimeout(render._t);render._t=setTimeout(()=>m.classList.remove('enter','from-r','from-l'),1500)}
+}
+
+
+/* =================== v22 : onglet Nutrition — produits Super U d'abord, bilan calorique ensuite, puis le reste =================== */
+function ruckNetPerMin(st){const W=st.kg,L=st.loadKg||0;return Math.max(1,pandolfW(W,L,1.5)*60/4184-W/60)}
+function bilanCard(){
+  const st=S.settings,d=day(S.sel),n=nutri(d),a=act(d,st),b0=balance(d,st),b={inK:Math.round(b0.inK),out:Math.round(b0.out)},base=bmr(st),daily=base*0.2,mx=Math.max(b.inK,b.out,1),has=n.k>0,diff=b.inK-b.out,def=diff<0;
+  const sp=[['ruck','Marche lestée',a.w.net],['abs','Abdos',a.ab.net],['push','Pompes',a.pu.net],['sport','Salle',a.g.net]];if(a.s.net>0)sp.push(['swim','Natation',a.s.net]);
+  const tag=!has?'<span class="badge">À remplir</span>':`<span class="badge ${def?'lime':'warn'}">${def?'Déficit':'Excédent'} ${i0(Math.abs(diff))} kcal</span>`;
+  const msg=!has?'Ajoute ce que tu manges avec la liste Super U juste au-dessus : ton solde s\'affiche ici.'
+    :def?`Déficit de ${i0(-diff)} kcal aujourd'hui, soit environ ${i0(-diff/7.7)} g de graisse en moins (1 kg ≈ 7 700 kcal).`
+    :`Excédent de ${i0(diff)} kcal aujourd'hui. Environ ${i0(diff/ruckNetPerMin(st))} min de marche lestée le compenseraient.`;
+  return`<section class="card bl-card">
+    <h2><span class="h-left">${ic('flame',18)} Bilan calorique</span>${tag}</h2>
+    <div class="bl-top">
+      <div class="bl-c"><span class="bl-l">${ic('food',13)} Consommé</span><b class="num">${N(b.inK)}</b><small>kcal</small></div>
+      <span class="bl-op" aria-hidden="true">−</span>
+      <div class="bl-c"><span class="bl-l">${ic('flame',13)} Dépensé</span><b class="num">${N(b.out)}</b><small>kcal</small></div>
+      <span class="bl-op" aria-hidden="true">=</span>
+      <div class="bl-c bl-res ${has?(def?'good':'over'):''}"><span class="bl-l">Solde</span><b class="num">${has?N(diff,0,true):'—'}</b><small>kcal</small></div>
+    </div>
+    <div class="bl-bars">
+      <div class="bl-bar"><span>Consommé</span><i><u class="in" style="width:${(b.inK/mx*100).toFixed(1)}%"></u></i></div>
+      <div class="bl-bar"><span>Dépensé</span><i><u class="out" style="width:${(b.out/mx*100).toFixed(1)}%"></u></i></div>
+    </div>
+    <div class="bl-det">
+      <div><span>Métabolisme de base</span><b>${i0(base)} kcal</b></div>
+      <div><span>Vie quotidienne (+20 %)</span><b>${i0(daily)} kcal</b></div>
+      ${sp.map(([i,l,v])=>`<div><span>${ic(i,13)} ${l}</span><b>${v>0.5?'+ '+i0(v):'0'} kcal</b></div>`).join('')}
+      <div class="bl-tot"><span>Dépense totale</span><b>${i0(b.out)} kcal</b></div>
+      ${n.beerK?`<div><span>Dont bière dans le consommé</span><b>${i0(n.beerK)} kcal</b></div>`:''}
+    </div>
+    <p class="hint" style="margin:10px 0 0">${msg} Objectif repas : ${i0(st.kcalGoal)} kcal.</p>
+  </section>`}
+function foodView(){
+  const parts=vFood().split(/(?=<section)/).map(x=>x.trim()).filter(x=>x.startsWith('<section'));
+  const find=t=>parts.find(x=>x.includes(t))||'';
+  const add=find('data-live="results"').replace('<span class="h-left">Ajouter un aliment</span>',`<span class="h-left">${ic('food',18)} Produits Super U</span>`);
+  const jour=find('>Journal<').replace('cherche un produit ci-dessous','cherche un produit ci-dessus');
+  const nut=find('Nutrition du jour');
+  const rest=parts.filter(x=>x!==find('data-live="results"')&&x!==find('>Journal<')&&x!==nut).join('');
+  return add+bilanCard()+jour+nut+rest+transitCard()+(window.RP_STANDALONE?'':photoCard())+menusCard()}
+function render(enter,dir){
+  renderChrome();
+  const m=$('#main'),prevH=m.querySelector(':scope>#doitH'),V={
+    home:()=>{const h=homeFix(vHome()),i=h.indexOf('</section>')+10;return soberCard()+h.slice(0,i)+appsDock()+h.slice(i)+photosCard()+(S.settings.installDone?'':installCard(true))},
+    food:foodView,sport:vSport,hyg:vHyg,beer:vSober,traceo:vTraceo,
     photos:()=>impHub()+vPhotos().replace(/<div class="next" style="margin-top:10px;font-size:12.5px">Jusqu'à 600 photos[^<]*<\/div>/,''),
     budget:()=>{const b=vBudget(),i=b.indexOf('</section>')+10;return b.slice(0,i)+bplanCard()+b.slice(i)+bankCard()},
     todo:vTodo};
