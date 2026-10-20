@@ -1376,6 +1376,83 @@ h3{font-weight:700;letter-spacing:-.02em}
 @media (prefers-reduced-motion:no-preference){.enter .bl-bar u{animation:dGrowX .9s cubic-bezier(.2,.8,.2,1) both}}
 .card>h2>.small{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
 </style>
+<style id="v23">
+/* =================== v23 : onglet Do It Émotion =================== */
+.nav button{padding:0 7px}
+.em-coach{display:flex;gap:12px;align-items:center}
+.em-av{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;flex:none;color:var(--accent);background:radial-gradient(circle at 30% 30%,rgba(43,255,136,.28),rgba(91,141,255,.18));box-shadow:0 0 0 1px rgba(43,255,136,.35),0 0 26px -6px rgba(43,255,136,.6)}
+.em-name{display:block;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.02em;margin-top:4px}
+.em-meth{font-size:12.5px;color:var(--hero-muted);margin-top:2px}
+.em-rdv{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(6,19,37,.45);border:1px solid var(--hero-line)}
+.em-when{display:flex;flex-direction:column;min-width:0}
+.em-k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--hero-muted)}
+.em-when b{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.02em;margin-top:6px}
+.em-h{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:4px}
+.em-count{display:flex;flex-direction:column;align-items:center;flex:none;min-width:76px;padding:10px 8px;border-radius:16px;background:var(--good-bg);border:1px solid rgba(43,255,136,.35)}
+.em-count b{font-family:var(--display);font-weight:900;font-size:28px;line-height:1;color:var(--accent);text-shadow:0 0 18px rgba(43,255,136,.5)}
+.em-count span{font-size:11px;color:var(--hero-muted);margin-top:4px;text-align:center}
+.em-count.soon{animation:dPulse 2.4s ease-out infinite}
+.em-path{margin-top:14px;color:var(--hero-muted)}
+.em-dots{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:8px}
+.em-dots i{height:8px;border-radius:99px;background:var(--hero-line)}
+.em-dots i.on{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.em-edit{margin-top:14px;padding:14px;border-radius:16px;background:rgba(6,19,37,.5);border:1px solid var(--hero-line)}
+.em-edit .grid3{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.em-edit .inp{min-width:0;padding-inline:10px}
+.em-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.em-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;text-align:center;transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s,border-color .2s,color .2s}
+.em-card .ic{color:var(--c)}
+.em-card:active{transform:scale(.94)}
+.em-card.on{color:#fff;border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,var(--surface));box-shadow:0 8px 22px -12px var(--c);transform:translateY(-2px)}
+.em-scale{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px;margin-top:6px}
+.em-scale button{height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);transition:transform .15s,background .2s}
+.em-scale button.on{background:hsl(var(--h) 85% 55%);border-color:transparent;color:#03140B;font-weight:700;transform:scale(1.08);box-shadow:0 6px 16px -6px hsl(var(--h) 85% 55%)}
+.br-wrap{display:grid;place-items:center;padding:8px 0 2px}
+.br-ring{position:relative;width:min(230px,64vw);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(43,255,136,.08),transparent 70%);box-shadow:inset 0 0 0 1px var(--line)}
+.br-ball{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#9DFFC9,#2BFF88 45%,#0FA3B1 100%);opacity:.9;transform:scale(.62);box-shadow:0 0 60px -10px #2BFF88}
+.br-txt{position:relative;display:flex;flex-direction:column;align-items:center;color:#03140B}
+.br-txt b{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.br-wrap{gap:10px}.br-left{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.em-seg{grid-template-columns:repeat(4,minmax(0,1fr))}
+.em-ax-h{display:flex;gap:12px;align-items:center}
+.em-ax-i{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;flex:none;background:var(--good-bg);color:var(--accent);box-shadow:0 0 0 1px rgba(43,255,136,.3)}
+.em-ax-h b{display:block;font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.03em}
+.em-ax-h span{font-size:12.5px;color:var(--muted)}
+.em-why{margin:14px 0 0;font-size:14px;line-height:1.55;color:var(--fg)}
+.em-aff{margin-top:12px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,var(--good-bg),transparent);border-left:3px solid var(--accent);font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:-.01em;color:var(--accent)}
+.em-urge{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.em-urge b{font-family:var(--display);font-weight:900;font-size:30px;color:var(--accent);margin-right:8px}
+.em-urge span{font-size:12.5px;color:var(--muted)}
+.em-exs{display:grid;gap:8px;margin-top:14px}
+.em-ex{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);transition:border-color .2s,background .2s}
+.em-ex b{font-size:14.5px}
+.em-ex p{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+.em-ex.on{border-color:rgba(43,255,136,.45);background:color-mix(in srgb,#2BFF88 7%,var(--surface))}
+.em-chk{width:30px;height:30px;border-radius:10px;flex:none;display:grid;place-items:center;border:1.5px solid var(--line);color:transparent;transition:background .2s,transform .2s cubic-bezier(.3,1.6,.5,1)}
+.em-ex.on .em-chk{background:var(--accent);border-color:transparent;color:#03140B;transform:scale(1.06)}
+.em-cnt{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--accent)}
+.em-tools{display:grid;gap:10px}
+.em-tool{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.em-ti{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none;background:var(--blue-soft,#16305E);color:#9DB8FF}
+.em-tool b{font-size:14.5px}.em-tool p{margin:4px 0 6px;font-size:13px;line-height:1.5;color:var(--muted)}
+.em-try{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--accent);font-weight:600}
+.em-ses{padding:12px 0;border-top:1px dashed var(--line)}.em-ses:first-of-type{border-top:0;padding-top:0}
+.em-ses .field{margin-top:10px}
+.em-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:120px;align-items:end}
+.em-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+.em-day i{width:100%;max-width:30px;border-radius:9px 9px 4px 4px;background:var(--surface);flex:none}
+.em-day i.on{background:hsl(var(--h) 85% 55%);box-shadow:0 0 12px -2px hsl(var(--h) 85% 55%)}
+.em-day span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.em-day u{width:8px;height:8px;border-radius:50%;background:transparent}
+.em-help{margin:6px 4px 0;text-align:center;font-size:12.5px}
+.em-help a{color:var(--accent);font-weight:700;text-decoration:none}
+@media (prefers-reduced-motion:no-preference){
+  .br-ball.on{animation:brCycle 10s ease-in-out infinite}
+  .em-av{animation:dFloat 5s ease-in-out infinite}
+  .enter .em-dots i.on{animation:dFade .8s both}
+}
+@keyframes brCycle{0%,100%{transform:scale(.62)}50%{transform:scale(1)}}
+</style>
 <div id="rp-lock" hidden><div class="rl-in">
 <img src="icon-192.png" alt="" width="84" height="84" class="rl-logo">
 <h1>DO IT<span>PIERRE</span></h1>
@@ -1413,7 +1490,7 @@ h3{font-weight:700;letter-spacing:-.02em}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261019101344';
+var LSK='rp-vault-key',BUILD='20261020125607';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -4778,6 +4855,218 @@ function render(enter,dir){
   const m=$('#main'),prevH=m.querySelector(':scope>#doitH'),V={
     home:()=>{const h=homeFix(vHome()),i=h.indexOf('</section>')+10;return soberCard()+h.slice(0,i)+appsDock()+h.slice(i)+photosCard()+(S.settings.installDone?'':installCard(true))},
     food:foodView,sport:vSport,hyg:vHyg,beer:vSober,traceo:vTraceo,
+    photos:()=>impHub()+vPhotos().replace(/<div class="next" style="margin-top:10px;font-size:12.5px">Jusqu'à 600 photos[^<]*<\/div>/,''),
+    budget:()=>{const b=vBudget(),i=b.indexOf('</section>')+10;return b.slice(0,i)+bplanCard()+b.slice(i)+bankCard()},
+    todo:vTodo};
+  TRC.clear();
+  m.innerHTML=doitHead(S.tab)+(V[S.tab]||V.home)();
+  if(!enter&&prevH&&prevH.dataset.tab===S.tab){const nh=m.querySelector(':scope>#doitH');if(nh)nh.replaceWith(prevH)}else diReady();
+  S.flash=null;wireLazy(m);trWire(m);if(typeof zWire==='function')zWire(m);diWire(m);
+  if(enter){m.classList.remove('enter','from-r','from-l');void m.offsetWidth;m.classList.add('enter');if(dir)m.classList.add('from-'+dir);[...m.children].forEach((c,i)=>c.style.setProperty('--i',i));countUp(m);clearTimeout(render._t);render._t=setTimeout(()=>m.classList.remove('enter','from-r','from-l'),1500)}
+}
+
+
+/* =================== v23 : onglet Do It Émotion (accompagnement de Laura, météo émotionnelle, 4 axes, respiration) =================== */
+Object.assign(ICONS,{
+ lotus:'<path d="M12 20c-4.5 0-8-2.4-9-6 3 0 5.6 1.1 7 3M12 20c4.5 0 8-2.4 9-6-3 0-5.6 1.1-7 3M12 20c-2.2-2-3.2-4.6-3.2-7.4 0-2.6 1.2-5 3.2-7.1 2 2.1 3.2 4.5 3.2 7.1 0 2.8-1 5.4-3.2 7.4Z"/>',
+ feather:'<path d="M20 4c-7.5 0-12.5 4.5-13.5 12L5 20.5M7 16.5h6.5C17 15 19.4 11 20 4M9.6 12.3h6"/>',
+ bubble:'<circle cx="12" cy="12" r="8.5"/><path d="M7.8 9.6a4.6 4.6 0 0 1 3.6-3.1"/><circle cx="12" cy="13.5" r="1.6"/>',
+ wave:'<path d="M3 15c2 0 2-2 4.5-2s2.5 2 4.5 2 2-2 4.5-2 2.5 2 4.5 2M3 9.5c2 0 2-2 4.5-2s2.5 2 4.5 2 2-2 4.5-2 2.5 2 4.5 2"/>',
+ wind:'<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h6"/>',
+ palette:'<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.2-1-1.5-1-2.6 0-1 .8-1.7 1.8-1.7H17a3.5 3.5 0 0 0 3.5-3.5c0-4.2-3.8-7.5-8.5-7.5Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.3" r="1"/><circle cx="14.6" cy="7.3" r="1"/>',
+ tree:'<path d="M12 21v-6M12 15l-5-3.2M12 15l5-3.2M12 15V8"/><circle cx="12" cy="5.5" r="2.4"/><circle cx="6" cy="10.5" r="2.4"/><circle cx="18" cy="10.5" r="2.4"/>',
+ cards:'<rect x="3.5" y="6.5" width="11" height="14" rx="2"/><path d="M9.5 4.6 18 3l2.6 13.6-6.1 1.2"/>',
+ talk:'<path d="M4 5h16v10.5H9.5L4 19.5Z"/><path d="M8 9.2h8M8 12h5"/>'});
+TABS.splice(Math.max(0,TABS.findIndex(t=>t[0]==='photos')),0,['emo','Émotion','lotus']);S._nav=null;
+TAB_SETS.emo=['lotus','heart','wind','leaf','moon','sparkle','smile','feather','sunrise','bubble'];
+DI_T.emo=['ÉMOTION','LIBÉRER · APAISER · AVANCER'];
+Object.assign(DEF,{emoNext:{date:'2026-11-03',from:'10:00',to:'11:30'},emoSessions:[{date:'2026-10-20',from:'10:00',to:'11:30',keep:'',todo:''}],emoTaskFor:null});fillDefaults();
+const EMO_IG='https://www.instagram.com/laura.liberationemotionnelle49/',EMO_WEB='https://www.laura-trublard.com/';
+const EMOS=[['joie','Joie','sun','#FFD166'],['calme','Calme','leaf','#2BFF88'],['gratitude','Gratitude','heart','#FF8FAB'],['fierte','Fierté','trophy','#FFB547'],['espoir','Espoir','sunrise','#9DFFC9'],['fatigue','Fatigue','moon','#9DB0CC'],
+  ['tristesse','Tristesse','rain','#5B8DFF'],['colere','Colère','flame','#FF5D6E'],['peur','Peur, anxiété','alert','#C58CFF'],['frustration','Frustration','storm','#FF8A5B'],['solitude','Solitude','user','#7FA7FF'],['envie','Envie de boire','beer','#FFB547']];
+const EMO_BODY=['Tête','Gorge','Poitrine','Ventre','Épaules, nuque','Mains','Jambes'];
+const AXES=[
+ {k:'deuil',n:'Deuil du passé',tab:'Passé',s:'Accepter pour avancer',i:'feather',
+  why:"Faire le deuil, ce n'est pas oublier. C'est accepter que ce qui s'est passé ne changera plus, pour que ça arrête de décider à ta place aujourd'hui. Ça se fait par étapes : le choc, la colère, la tristesse, puis l'acceptation et la reconstruction. Elles ne viennent pas forcément dans l'ordre, et c'est normal d'y revenir.",
+  aff:"Mon passé m'a construit. Il ne me définit pas.",prompt:"Aujourd'hui, qu'est-ce que je suis prêt à laisser derrière moi ?",
+  ex:[['ligne','Ma ligne de vie','20 min',"Trace une ligne sur une feuille, de ta naissance à aujourd'hui. Places-y 5 moments qui t'ont marqué, les beaux comme les durs. À côté de chacun, écris ce qu'il t'a appris."],
+      ['lettre',"La lettre que je n'enverrai pas",'15 min',"Écris à une personne, à une période ou à ton « toi d'avant » tout ce que tu n'as jamais pu dire, sans te censurer. Ensuite, garde-la, déchire-la ou brûle-la en sécurité : c'est un geste symbolique de clôture."],
+      ['garde','Ce que je garde, ce que je laisse','10 min',"Deux colonnes. À gauche, ce que tu emportes de ton passé : tes forces, tes leçons, tes beaux souvenirs. À droite, ce que tu choisis de déposer : rancunes, culpabilité, vieilles étiquettes."],
+      ['dessin','Dessiner avant, après','10 min',"Inspiré de l'art-thérapie : dessine sans réfléchir ce que tu ressens quand tu penses à ton passé (formes, couleurs). Puis dessine ce que tu aimerais ressentir. Aucun talent n'est nécessaire."],
+      ['appris',"Ce que les épreuves m'ont appris",'5 min',"Note 3 choses que tu sais faire ou comprendre aujourd'hui grâce à ce que tu as traversé."],
+      ['rituel','Un rituel de clôture','30 min',"Choisis un geste symbolique : un objet que tu ranges ou que tu donnes, une marche au bord de la Loire en laissant une pensée derrière toi. Le corps comprend les symboles."]]},
+ {k:'bulle',n:'Rester dans ma bulle',tab:'Ma bulle',s:'Protéger mon calme',i:'bubble',
+  why:"Ta bulle, c'est ton espace intérieur : ton calme, ton énergie, tes priorités. Y rester, ce n'est pas te couper des autres. C'est choisir ce que tu laisses entrer (les humeurs des autres, les sollicitations, les écrans) et revenir à ce qui dépend de toi.",
+  aff:'Je choisis ce qui entre dans ma bulle.',prompt:"Qu'est-ce qui est entré dans ma bulle aujourd'hui sans que je le choisisse ?",
+  ex:[['visu','Visualiser ma bulle','3 min',"Ferme les yeux. Imagine une bulle de lumière autour de toi, à un bras de distance. À chaque inspiration, elle devient plus nette. Ce qui ne t'appartient pas glisse dessus sans entrer."],
+      ['ancrage','Ancrage 5-4-3-2-1','2 min',"Nomme 5 choses que tu vois, 4 que tu entends, 3 que tu touches, 2 que tu sens, 1 que tu goûtes. Ça te ramène dans l'instant présent."],
+      ['controle','Ce qui dépend de moi','5 min',"Écris ce qui te préoccupe en deux colonnes : ce qui dépend de moi, ce qui ne dépend pas de moi. Garde ton énergie pour la première."],
+      ['non','Dire non sans me justifier','2 min',"Prépare une phrase simple et garde-la en tête : « Merci, mais ce n'est pas possible pour moi. » Pas besoin d'en dire plus."],
+      ['cnv','Poser une limite avec la CNV','5 min',"Prépare ta phrase avec la communication non violente : « Quand [le fait], je me sens [émotion], parce que j'ai besoin de [besoin]. Est-ce que tu pourrais [demande précise] ? »"],
+      ['detox','Une heure sans écrans','60 min',"Coupe les notifications et les réseaux pendant une heure. Marche, lis, range, respire. Note comment tu te sens après."]]},
+ {k:'stress',n:'Libérer le stress',tab:'Stress',s:"Le corps d'abord",i:'wind',
+  why:"Le stress est une réaction du corps avant d'être une pensée. Il redescend plus vite quand tu agis sur le corps : la respiration, le mouvement, la détente des muscles. La tête suit ensuite.",
+  aff:'Je respire. Je relâche. Je reviens à moi.',prompt:"Qu'est-ce qui m'a stressé aujourd'hui, et qu'est-ce qui m'a aidé ?",
+  ex:[['coherence','Cohérence cardiaque','5 min',"Inspire 5 secondes, expire 5 secondes, pendant 5 minutes : le bouton « Respirer » plus haut te guide. L'idéal : 3 fois par jour, le matin, avant le déjeuner et en fin d'après-midi."],
+      ['expire','Expiration longue','2 min',"Inspire par le nez sur 4 temps, souffle par la bouche sur 6 à 8 temps. Une expiration plus longue que l'inspiration calme le cœur."],
+      ['secouer','Secouer le stress','1 min',"Debout, secoue les mains, puis les bras, les épaules et les jambes pendant une minute. Termine par 3 grandes respirations."],
+      ['muscles','Contracter, relâcher','5 min',"Contracte fort un groupe de muscles pendant 5 secondes (poings, épaules, ventre, jambes), puis relâche d'un coup pendant 10 secondes. Remonte ainsi tout le corps."],
+      ['scan','Scan corporel','5 min',"Assis ou allongé, promène ton attention des pieds jusqu'à la tête. Là où ça serre, souffle dessus et laisse fondre."],
+      ['marche','Marche consciente','20 min',"Pendant ta marche lestée, sens tes pieds, ton souffle, le poids du sac. Quand l'esprit part ailleurs, reviens simplement au pas suivant."]]},
+ {k:'envie',n:"Évacuer l'envie",tab:'Envie',s:'Des gestes simples',i:'wave',
+  why:"Une envie, c'est une vague : elle monte, atteint un pic, puis redescend, souvent en 10 à 20 minutes. Tu n'as ni à la combattre ni à lui obéir. Tu la laisses passer en occupant ton corps et tes mains.",
+  aff:'Cette envie va passer. Moi, je reste.',prompt:"Quand l'envie est venue, qu'est-ce qui s'était passé juste avant ?",
+  ex:[['vague','Surfer la vague','10 min',"Note l'intensité de l'envie sur 10. Respire lentement et regarde-la monter puis redescendre, sans agir. Note l'intensité à la fin : elle a baissé."],
+      ['halt','Faim, colère, solitude, fatigue ?','1 min',"Une envie cache souvent l'un de ces quatre besoins. Lequel est là ? Mange quelque chose, défoule-toi, appelle quelqu'un ou va te reposer."],
+      ['eau',"Un grand verre d'eau",'1 min',"Bois lentement un grand verre d'eau fraîche ou pétillante. Le geste de boire remplace l'automatisme."],
+      ['bouger','Bouger tout de suite','10 min',"20 pompes, une série d'abdos ou 10 minutes de marche. Quand le corps est occupé, l'envie perd de sa force."],
+      ['lieu','Changer de lieu','5 min',"Sors de la pièce, prends l'air, change d'activité. L'envie est souvent liée à un endroit ou à une habitude."],
+      ['appel',"Appeler ou écrire à quelqu'un",'10 min',"Parler à quelqu'un fait redescendre la tension. Alcool Info Service répond aussi, 7 jours sur 7 : 0 980 980 930."]]}];
+const EMO_TOOLS=[['palette','Art-thérapie',"Exprimer par le dessin, la couleur et les formes ce que les mots n'arrivent pas à dire. Aucun talent n'est nécessaire.",'Dessine ton émotion du jour en 5 minutes.'],
+ ['note','Écriture thérapeutique',"Écrire librement pour vider la tête et mettre de l'ordre dans ce qu'on ressent.",'10 minutes d\'écriture libre, sans te relire.'],
+ ['cards','Cartes des émotions',"Mettre le mot juste sur ce qu'on ressent. Nommer une émotion, c'est déjà commencer à l'apaiser.",'Fais ta météo émotionnelle du jour.'],
+ ['tree','Psychogénéalogie',"Comprendre ce qui vient de l'histoire familiale : les répétitions, les « loyautés invisibles », sans chercher de coupable.",'Note une croyance dont tu sens qu\'elle ne vient pas vraiment de toi.'],
+ ['sparkle','Supports symboliques',"Un objet, une image ou un geste pour représenter ce qu'on garde et ce qu'on dépose.",'Choisis un objet qui symbolise ton nouveau départ.'],
+ ['talk','Communication non violente',"Dire ce qu'on ressent et ce dont on a besoin, sans reproche : observation, sentiment, besoin, demande.",'Prépare une phrase pour une situation qui te pèse.']];
+
+function emoOf(d){return d.emo||{}}
+function emoDaysBetween(a,b){return Math.round((parseId(b)-parseId(a))/864e5)}
+function emoHist(){const out={x:{},br:0,u:0,days:0};for(const[id,d]of Object.entries(S.docs)){if(!/^\d{4}-\d{2}-\d{2}$/.test(id)||!d.emo)continue;const E=d.emo;if((E.e&&E.e.length)||E.s!=null)out.days++;for(const k in E.x||{})if(E.x[k])out.x[k]=(out.x[k]||0)+1;out.br+=E.br||0;out.u+=E.u||0}return out}
+function emoTabNow(){const k=S.emoTab||'deuil';return AXES.some(a=>a.k===k)?k:'deuil'}
+function hmFr(t){return String(t||'').replace(':','h')}
+
+function vEmo(){
+  const st=S.settings,d=day(S.sel),E=emoOf(d),k=emoTabNow(),ai=AXES.findIndex(a=>a.k===k),nx=st.emoNext,ses=st.emoSessions||[],H=emoHist();
+  const dn=nx?emoDaysBetween(TODAY(),nx.date):null;
+  const when=dn==null?'':dn<0?'Rendez-vous passé':dn===0?"C'est aujourd'hui":dn===1?'Demain':`Dans ${dn} jours`;
+  const done=ses.length,tot=12;
+  return`<section class="hero em-hero" style="padding:18px">${ORBS}
+    <div class="em-coach"><span class="em-av">${ic('lotus',24)}</span><div class="grow"><div class="hello">Mon accompagnement</div><b class="em-name">Laura · libération émotionnelle</b><div class="em-meth">Art-thérapie · psychogénéalogie</div></div></div>
+    <div class="em-rdv">
+      ${nx?`<div class="em-when"><span class="em-k">Prochain rendez-vous</span><b>${esc((x=>x.charAt(0).toUpperCase()+x.slice(1))(longDate(nx.date).replace(/ \d{4}$/,'')))}</b><span class="em-h">${esc(hmFr(nx.from))} – ${esc(hmFr(nx.to))}</span></div>
+      <div class="em-count ${dn!=null&&dn<=1?'soon':''}"><b class="num">${dn!=null&&dn>1?dn:dn===1?'J-1':dn===0?'J':'—'}</b><span>${esc(when)}</span></div>`
+      :`<div class="em-when"><span class="em-k">Prochain rendez-vous</span><b>À programmer</b><span class="em-h">Entre la date donnée par Laura</span></div>`}
+    </div>
+    <div class="em-path"><div class="between small"><span>Séance ${done} faite${done>1?'s':''}</span><span class="muted">parcours habituel : 10 à 12 séances</span></div>
+      <div class="em-dots">${Array.from({length:tot},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div></div>
+    <div class="wrap" style="margin-top:14px">
+      <button class="chip" data-a="emoEdit">${ic('cal',15)} ${nx?'Modifier le rendez-vous':'Programmer'}</button>
+      ${nx&&dn!=null&&dn<=0?`<button class="chip on" data-a="emoDone">${ic('check',15)} Séance faite</button>`:''}
+      <a class="chip" href="${EMO_IG}" target="_blank" rel="noopener">Instagram ${ic('ext',11)}</a>
+      <a class="chip" href="${EMO_WEB}" target="_blank" rel="noopener">Son site ${ic('ext',11)}</a>
+    </div>
+    ${S.emoEdit?`<div class="em-edit"><div class="grid3"><label class="field"><span>Date</span><input class="inp" type="date" id="emoD" value="${esc(nx?nx.date:addDays(TODAY(),14))}"></label><label class="field"><span>Début</span><input class="inp" type="time" id="emoF" value="${esc(nx?nx.from:'10:00')}"></label><label class="field"><span>Fin</span><input class="inp" type="time" id="emoT" value="${esc(nx?nx.to:'11:30')}"></label></div><button class="btn block" data-a="emoSave" style="margin-top:10px">Enregistrer le rendez-vous</button></div>`:''}
+  </section>
+
+  <section class="card">
+    <h2><span class="h-left">${ic('cards',18)} Météo émotionnelle</span><span class="small">${esc(relDay(S.sel))}</span></h2>
+    <p class="hint" style="margin:0 0 10px">Comment tu te sens, là, maintenant ? Choisis jusqu'à 3 émotions.</p>
+    <div class="em-grid">${EMOS.map(([v,l,i,c])=>`<button class="em-card ${(E.e||[]).includes(v)?'on':''}" style="--c:${c}" data-a="emoE" data-v="${v}">${ic(i,20)}<span>${esc(l)}</span></button>`).join('')}</div>
+    <div class="field" style="margin-top:14px"><span>Niveau de stress : <b class="num" data-live="emoS">${E.s!=null?E.s+' / 10':'—'}</b></span>
+      <div class="em-scale">${Array.from({length:11},(_,i)=>`<button class="${E.s===i?'on':''}" style="--h:${120-i*12}" data-a="emoS" data-v="${i}">${i}</button>`).join('')}</div>
+      <div class="between small muted" style="margin-top:4px"><span>Détendu</span><span>Débordé</span></div></div>
+    <div class="field" style="margin-top:12px"><span>Où je le sens dans le corps</span><div class="wrap">${EMO_BODY.map(b=>`<button class="chip ${(E.b||[]).includes(b)?'on':''}" data-a="emoB" data-v="${esc(b)}">${esc(b)}</button>`).join('')}</div></div>
+    <label class="field" style="margin-top:12px"><span>Ce qui l'a déclenché</span><input class="inp" data-in="emoT" value="${esc(E.t||'')}" placeholder="Une phrase suffit"></label>
+  </section>
+
+  <section class="card em-breath">
+    <h2><span class="h-left">${ic('wind',18)} Respirer maintenant</span><span class="badge lime">Cohérence cardiaque</span></h2>
+    <div class="br-wrap"><div class="br-ring"><div class="br-ball ${S.breath?'on':''}" id="brBall" style="animation-delay:-${S.breath?(((Date.now()-S.breath.t0)%10000)/1000).toFixed(2):0}s"></div><div class="br-txt"><b id="brLab">${S.breath?'Inspire':'Prêt ?'}</b></div></div><span class="br-left" id="brLeft">${S.breath?'':'6 respirations par minute'}</span></div>
+    <div class="wrap" style="justify-content:center;margin-top:12px">${S.breath?`<button class="btn" data-a="brStop">${ic('x',16)} Arrêter</button>`:[1,3,5].map(m=>`<button class="${m===5?'btn':'btn ghost'}" data-a="brGo" data-v="${m}">${m} min</button>`).join('')}</div>
+    <p class="hint" style="margin:12px 0 0;text-align:center">Inspire quand la bulle grandit, expire quand elle rétrécit. ${E.br?`Aujourd'hui : ${E.br} min.`:''}</p>
+  </section>
+
+  <div class="dseg em-seg" id="emSeg" role="tablist" aria-label="Mes axes de travail" style="--k:${ai}"><span class="pill" aria-hidden="true"></span>${AXES.map(a=>`<button role="tab" aria-selected="${a.k===k}" data-a="emoTab" data-v="${a.k}">${ic(a.i,19)}<span>${esc(a.tab)}</span></button>`).join('')}</div>
+  <div class="sp-panel" id="emPanel">${emoPanel(k)}</div>
+
+  <section class="card">
+    <h2><span class="h-left">${ic('palette',18)} Les outils de Laura</span></h2>
+    <p class="hint" style="margin:0 0 10px">D'après la présentation publique de sa méthode. Elle les adapte à toi en séance.</p>
+    <div class="em-tools">${EMO_TOOLS.map(([i,n,dsc,tr])=>`<div class="em-tool"><span class="em-ti">${ic(i,20)}</span><div><b>${esc(n)}</b><p>${esc(dsc)}</p><span class="em-try">${ic('sparkle',13)} ${esc(tr)}</span></div></div>`).join('')}</div>
+  </section>
+
+  <section class="card">
+    <h2><span class="h-left">${ic('note',18)} Mes séances</span><span class="small">${done} séance${done>1?'s':''}</span></h2>
+    ${ses.slice().map((s,i)=>({...s,i})).reverse().map(s=>`<div class="em-ses"><div class="between"><b>${esc(longDate(s.date))}</b><span class="small muted">${esc(hmFr(s.from))} – ${esc(hmFr(s.to))}</span></div>
+      <label class="field"><span>Ce que je retiens</span><textarea class="inp" rows="3" data-in="emoSes" data-i="${s.i}" data-f="keep" placeholder="Ce qui m'a marqué, ce que j'ai compris">${esc(s.keep||'')}</textarea></label>
+      <label class="field"><span>À pratiquer d'ici la prochaine séance</span><textarea class="inp" rows="2" data-in="emoSes" data-i="${s.i}" data-f="todo" placeholder="Les exercices ou les intentions donnés par Laura">${esc(s.todo||'')}</textarea></label></div>`).join('')}
+  </section>
+
+  <section class="card">
+    <h2><span class="h-left">${ic('chartup',18)} Ma semaine</span></h2>
+    ${emoWeek()}
+    <div data-live="emoStats">${LIVE.emoStats()}</div>
+  </section>
+
+  <p class="hint em-help">Si une émotion devient trop lourde entre deux séances, parles-en à Laura ou à ton médecin. Besoin de parler tout de suite : SOS Amitié <a href="tel:0972394050">09 72 39 40 50</a> (24 h/24) · Alcool Info Service <a href="tel:0980980930">0 980 980 930</a> (7 j/7).</p>`;
+}
+function emoWeek(){const ids=[...Array(7)].map((_,i)=>addDays(S.sel,i-6));
+  return`<div class="em-week">${ids.map(id=>{const E=(S.docs[id]&&S.docs[id].emo)||{},s=E.s,c=(E.e||[])[0],col=c?(EMOS.find(x=>x[0]===c)||[])[3]:null;
+    return`<div class="em-day"><i style="height:${s!=null?Math.max(6,s*10):4}%;${s!=null?`--h:${120-s*12}`:''}" class="${s!=null?'on':''}"></i><span>${['D','L','M','M','J','V','S'][parseId(id).getDay()]}</span>${col?`<u style="background:${col}"></u>`:'<u></u>'}</div>`}).join('')}</div>
+  <div class="between small muted" style="margin-top:6px"><span>Hauteur : niveau de stress</span><span>Point : émotion principale</span></div>`}
+function emoPanel(k){const a=AXES.find(x=>x.k===k)||AXES[0],d=day(S.sel),E=emoOf(d),H=emoHist(),x=E.x||{},nd=a.ex.filter(e=>x[a.k+':'+e[0]]).length;
+  return`<section class="card em-axis">
+    <div class="em-ax-h"><span class="em-ax-i">${ic(a.i,26)}</span><div class="grow"><b>${esc(a.n)}</b><span>${esc(a.s)}</span></div><div class="score" style="flex:none">${ring(nd/a.ex.length,58,6,'lime')}<div class="val"><b style="font-size:14px">${nd}/${a.ex.length}</b></div></div></div>
+    <p class="em-why">${esc(a.why)}</p>
+    <div class="em-aff">« ${esc(a.aff)} »</div>
+    ${a.k==='envie'?`<div class="em-urge"><div><b class="num" data-live="emoU">${E.u||0}</b><span>envie${(E.u||0)>1?'s':''} surmontée${(E.u||0)>1?'s':''} aujourd'hui</span></div><div class="wrap"><button class="btn sm" data-a="emoU">${ic('plus',15)} Une de plus</button><button class="btn sm ghost" data-a="emoSOS">${ic('alert',15)} Mode SOS</button></div></div>`:''}
+    <div class="em-exs">${a.ex.map(([id,n,dur,how])=>{const key=a.k+':'+id,on=!!x[key],cnt=H.x[key]||0;
+      return`<div class="em-ex ${on?'on':''}"><button class="em-chk" data-a="emoX" data-v="${key}" aria-pressed="${on}" aria-label="${on?'Fait':'Marquer comme fait'}">${ic('check',16)}</button><div class="grow"><div class="between"><b>${esc(n)}</b><span class="badge">${esc(dur)}</span></div><p>${esc(how)}</p>${cnt?`<span class="em-cnt">Fait ${cnt} fois</span>`:''}</div></div>`}).join('')}</div>
+    <label class="field" style="margin-top:14px"><span>${ic('note',14)} ${esc(a.prompt)}</span><textarea class="inp" rows="3" data-in="emoJ" data-k="${a.k}" placeholder="Écris librement, personne d'autre ne le lit">${esc((E.j||{})[a.k]||'')}</textarea></label>
+  </section>`}
+
+/* tâche de rappel pour le prochain rendez-vous (créée une seule fois par date) */
+function emoEnsureTask(){const st=S.settings,nx=st.emoNext;if(!nx||!nx.date||st.emoTaskFor===nx.date||nx.date<TODAY())return;
+  const items=(S.todos&&S.todos.items)||[];if(items.some(x=>x.due===nx.date&&/Laura/.test(x.t||''))){mutSet(s=>{s.emoTaskFor=nx.date},false);return}
+  const item={id:newId(),t:`Rendez-vous avec Laura, libération émotionnelle (${hmFr(nx.from)} – ${hmFr(nx.to)})`,c:nx.date,due:nx.date,time:nx.from,rem:60,cat:'Santé',rec:null,p:false,note:'',d:null};
+  mutSet(s=>{s.emoTaskFor=nx.date},false);mutTodos(x=>{x.items=(x.items||[]).concat([item])});toast('Rappel ajouté dans tes tâches, 1 h avant')}
+
+/* respiration guidée : 5 s d'inspiration, 5 s d'expiration */
+let brT=null;
+function brTick(){const b=S.breath;if(!b)return;const el=Date.now()-b.t0,left=Math.max(0,b.dur*60000-el),ph=(el/1000)%10<5;
+  const L=$('#brLab'),R=$('#brLeft');if(L)L.textContent=ph?'Inspire':'Expire';if(R)R.textContent=`${Math.floor(left/60000)}:${String(Math.floor(left/1000)%60).padStart(2,'0')}`;
+  if(left<=0)brEnd(true)}
+function brEnd(full){const b=S.breath;clearInterval(brT);brT=null;S.breath=null;
+  if(full&&b){mutDay(x=>{x.emo=x.emo||{};x.emo.br=(x.emo.br||0)+b.dur;if(b.dur>=5){x.emo.x=x.emo.x||{};x.emo.x['stress:coherence']=1}});burst();haptic('success');toast(`${b.dur} min de respiration. Bravo.`)}
+  else render()}
+
+Object.assign(LIVE,{emoStats(){const H=emoHist();return`<div class="statrow" style="margin-top:12px"><div class="stat"><b class="num">${Object.values(H.x).reduce((a,b)=>a+b,0)}</b><span>Exercices faits</span></div><div class="stat"><b class="num">${H.br}<small>min</small></b><span>De respiration</span></div><div class="stat"><b class="num">${H.u}</b><span>Envies surmontées</span></div></div>`},emoS(){const s=emoOf(day(S.sel)).s;return s!=null?s+' / 10':'—'},emoU(){return String(emoOf(day(S.sel)).u||0)}});
+Object.assign(IN,{
+  emoT(t){mutDay(d=>{d.emo=d.emo||{};d.emo.t=t.value.slice(0,300)},[])},
+  emoJ(t){const k=t.dataset.k;mutDay(d=>{d.emo=d.emo||{};d.emo.j=d.emo.j||{};d.emo.j[k]=t.value.slice(0,4000)},[])},
+  emoSes(t){const i=+t.dataset.i,f=t.dataset.f;mutSet(st=>{const s=(st.emoSessions||[])[i];if(s)s[f]=t.value.slice(0,4000)},false)},
+});
+const _tabV23=ACT.tab;
+Object.assign(ACT,{
+  tab(t,e){const r=_tabV23(t,e);if(t.dataset&&t.dataset.v==='emo')setTimeout(emoEnsureTask,900);return r},
+  emoE(t){const v=t.dataset.v;let full=false;mutDay(d=>{d.emo=d.emo||{};const a=d.emo.e||[];if(a.includes(v))d.emo.e=a.filter(x=>x!==v);else if(a.length>=3)full=true;else d.emo.e=a.concat([v])},[]);
+    if(full){toast('3 émotions maximum : retire-en une d\'abord');return}const on=(emoOf(day(S.sel)).e||[]).includes(v);t.classList.toggle('on',on);if(on)haptic()},
+  emoS(t){const v=+t.dataset.v;mutDay(d=>{d.emo=d.emo||{};d.emo.s=d.emo.s===v?null:v},['emoS']);const s=emoOf(day(S.sel)).s;document.querySelectorAll('[data-a="emoS"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===s))},
+  emoB(t){const v=t.dataset.v;mutDay(d=>{d.emo=d.emo||{};const a=d.emo.b||[];d.emo.b=a.includes(v)?a.filter(x=>x!==v):a.concat([v])},[]);t.classList.toggle('on',(emoOf(day(S.sel)).b||[]).includes(v))},
+  emoX(t){const key=t.dataset.v;let on=false;mutDay(d=>{d.emo=d.emo||{};d.emo.x=d.emo.x||{};on=!d.emo.x[key];if(on)d.emo.x[key]=1;else delete d.emo.x[key]},[]);
+    const p=$('#emPanel');if(p){p.innerHTML=emoPanel(emoTabNow())}live('emoStats');if(on){burst(undefined,undefined,12);haptic('success')}},
+  emoTab(t){const v=t.dataset.v,o=AXES.findIndex(a=>a.k===emoTabNow()),n=AXES.findIndex(a=>a.k===v);if(n<0||n===o)return;S.emoTab=v;haptic();
+    const seg=$('#emSeg'),p=$('#emPanel');if(!seg||!p){render();return}
+    seg.style.setProperty('--k',n);seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));seg.classList.remove('bounce');void seg.offsetWidth;seg.classList.add('bounce');
+    p.innerHTML=emoPanel(v);p.classList.remove('from-right','from-left');void p.offsetWidth;p.classList.add(n>o?'from-right':'from-left')},
+  emoU(){mutDay(d=>{d.emo=d.emo||{};d.emo.u=(d.emo.u||0)+1},['emoU','emoStats']);burst();haptic('success');toast('Envie surmontée. Tu es plus fort qu\'elle.')},
+  emoSOS(){if(typeof openSOS==='function')openSOS();else ACT.tab({dataset:{v:'beer'}})},
+  emoEdit(){S.emoEdit=!S.emoEdit;render()},
+  emoSave(){const dt=($('#emoD')||{}).value,f=($('#emoF')||{}).value||'10:00',to=($('#emoT')||{}).value||'11:30';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt||'')){toast('Choisis une date');return}
+    const old=S.settings.emoNext,it=old&&((S.todos&&S.todos.items)||[]).find(x=>x.due===old.date&&!x.d&&/Laura/.test(x.t||''));
+    S.emoEdit=false;mutSet(st=>{st.emoNext={date:dt,from:f,to};if(it)st.emoTaskFor=dt},false);
+    if(it){mutTodos(x=>{const o=x.items.find(y=>y.id===it.id);if(o){o.due=dt;o.c=dt;o.time=f;o.t=`Rendez-vous avec Laura, libération émotionnelle (${hmFr(f)} – ${hmFr(to)})`}});toast('Rendez-vous et rappel mis à jour')}
+    else{render();setTimeout(emoEnsureTask,300);toast('Rendez-vous enregistré')}},
+  emoDone(){const nx=S.settings.emoNext;if(!nx)return;mutSet(st=>{st.emoSessions=(st.emoSessions||[]).concat([{date:nx.date,from:nx.from,to:nx.to,keep:'',todo:''}]);st.emoNext=null},false);S.emoEdit=true;render();burst();toast('Séance notée. Programme la suivante.')},
+  brGo(t){const m=+t.dataset.v||5;S.breath={t0:Date.now(),dur:m};render();clearInterval(brT);brT=setInterval(brTick,250);brTick()},
+  brStop(){brEnd(false)},
+});
+
+function render(enter,dir){
+  renderChrome();
+  const m=$('#main'),prevH=m.querySelector(':scope>#doitH'),V={
+    home:()=>{const h=homeFix(vHome()),i=h.indexOf('</section>')+10;return soberCard()+h.slice(0,i)+appsDock()+h.slice(i)+photosCard()+(S.settings.installDone?'':installCard(true))},
+    food:foodView,sport:vSport,hyg:vHyg,beer:vSober,emo:vEmo,traceo:vTraceo,
     photos:()=>impHub()+vPhotos().replace(/<div class="next" style="margin-top:10px;font-size:12.5px">Jusqu'à 600 photos[^<]*<\/div>/,''),
     budget:()=>{const b=vBudget(),i=b.indexOf('</section>')+10;return b.slice(0,i)+bplanCard()+b.slice(i)+bankCard()},
     todo:vTodo};
