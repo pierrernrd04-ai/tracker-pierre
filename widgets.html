@@ -2836,7 +2836,7 @@ html.wmode .toast{bottom:84px}
 .sy-lively>b{color:var(--accent);font-size:15px}.sy-lively ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13.5px;color:var(--muted)}.sy-lively ol b{color:var(--fg)}
 .wsh-p{margin:0;font-size:14px;line-height:1.45;color:#C9D6EA}.wsh-p b{color:#fff}
 </style>
-<script>(function(){try{var h=location.hash.slice(1);if(!h)return;var p=new URLSearchParams(h),k=p.get('k'),t=p.get('t');if(k){localStorage.setItem('rp-vault-key',k);window.RP_FROMLINK=true}if(t)localStorage.setItem('rp-sync-tok',t);if(k||t)history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();window.RP_WIDGETS=true;</script><div id="rp-lock" hidden><div class="rl-in">
+<script>(function(){try{var h=location.hash.slice(1);if(!h)return;var p=new URLSearchParams(h),k=p.get('k'),t=p.get('t');if(k){localStorage.setItem('rp-vault-key',k);window.RP_FROMLINK=true}if(t)localStorage.setItem('rp-sync-tok',t);if(k||t)history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();window.RP_WIDGETS=true;window.RP_BUILD='20261027141248';</script><div id="rp-lock" hidden><div class="rl-in">
 <img src="icon-192.png" alt="" width="84" height="84" class="rl-logo">
 <h1>DO IT<span>PIERRE</span></h1>
 <p class="rl-sub">Ton tracker est privé. Entre ton mot de passe pour l'ouvrir.</p><div class="rl-wall"><b>Tu vois cet écran en fond d'écran ?</b><p>Lively ne transmet pas le clavier : impossible de taper le mot de passe ici. Il faut lui donner le <b>lien du bureau</b>, qui contient déjà ta clé.</p><ol><li>Ouvre <b>Chrome</b> et va sur <span class="rl-url">pierrernrd04-ai.github.io/tracker-pierre/widgets.html</span></li><li>Entre ton mot de passe, puis connecte la synchro (fenêtre qui s'ouvre)</li><li>Clique <b>Copier le lien pour Lively</b></li><li>Dans Lively : supprime ce fond d'écran, puis <b>+</b> › <b>Entrer une URL</b> › colle le lien</li></ol><a class="rl-open" href="https://pierrernrd04-ai.github.io/tracker-pierre/widgets.html" target="_blank" rel="noopener">Ouvrir la page dans le navigateur</a><p class="rl-or">Tu es déjà dans Chrome ? Entre simplement ton mot de passe ci-dessous.<br>Pas de clavier ? Utilise <b>Taper à la souris</b> sous le champ.</p></div><style>.rl-wall{margin:4px 0 6px;padding:16px;border-radius:18px;background:rgba(43,255,136,.08);border:1px solid rgba(43,255,136,.35);text-align:left;font-size:14px;line-height:1.45;color:#DDE6F5}.rl-wall b{color:#fff}.rl-wall>b{display:block;font-size:15.5px;margin-bottom:6px;color:#2BFF88}.rl-wall p{margin:0 0 8px}.rl-wall ol{margin:0 0 12px;padding-left:20px;display:grid;gap:5px}.rl-url{font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;color:#9DFFC9;word-break:break-all}.rl-open{display:flex;align-items:center;justify-content:center;height:44px;border-radius:13px;background:#12305A;border:1px solid #1B3A66;color:#fff;font-weight:800;text-decoration:none}.rl-or{margin:10px 0 0!important;font-size:12.5px;color:#9DB0CC;text-align:center}#rp-lock .rl-in{width:min(460px,100%)}</style>
@@ -2873,7 +2873,7 @@ html.wmode .toast{bottom:84px}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261027140852';
+var LSK='rp-vault-key',BUILD='20261027141248';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -6784,6 +6784,8 @@ if(WM){
   document.addEventListener('pointerdown',wDown);
   setInterval(()=>{const hm=nowHMs(),sec=new Date().getSeconds();document.querySelectorAll('[data-clk]').forEach(e=>{if(e.textContent!==hm)e.textContent=hm});document.querySelectorAll('[data-sec]').forEach(e=>e.setAttribute('stroke-dashoffset',String(60-sec)))},1000);
   setInterval(()=>{if(S.sel!==TODAY())S.sel=TODAY();wRefresh()},30000);
+  /* mise à jour automatique : quand une nouvelle version est publiée, le fond d'écran se recharge tout seul */
+  if(window.RP_STANDALONE&&window.RP_BUILD)setInterval(()=>{if(S.wEdit||S.wGallery||S.wSync||wDrag||isTyping())return;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(/^\d{14}$/.test(v)&&v>window.RP_BUILD)location.replace(location.pathname+'?v='+v)}).catch(()=>{})},5*60e3);
   let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{const c=WG.C;wGrid();if(WG.C!==c||true){WLay=null;wLoad();wSave()}wRender(false)},250)});
   setTimeout(()=>{if(window.RP_STANDALONE&&SY.tok&&!lsg(SYNC.init))syncNow('pull')},2600);
   setTimeout(()=>{if(window.RP_STANDALONE&&!SY.tok&&lsg('rp-vault-key')){S.wSync=true;wRender(false)}},1500);

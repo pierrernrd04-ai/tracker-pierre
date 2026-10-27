@@ -2873,7 +2873,7 @@ html.wmode .toast{bottom:84px}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261027140852';
+var LSK='rp-vault-key',BUILD='20261027141248';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -6784,6 +6784,8 @@ if(WM){
   document.addEventListener('pointerdown',wDown);
   setInterval(()=>{const hm=nowHMs(),sec=new Date().getSeconds();document.querySelectorAll('[data-clk]').forEach(e=>{if(e.textContent!==hm)e.textContent=hm});document.querySelectorAll('[data-sec]').forEach(e=>e.setAttribute('stroke-dashoffset',String(60-sec)))},1000);
   setInterval(()=>{if(S.sel!==TODAY())S.sel=TODAY();wRefresh()},30000);
+  /* mise à jour automatique : quand une nouvelle version est publiée, le fond d'écran se recharge tout seul */
+  if(window.RP_STANDALONE&&window.RP_BUILD)setInterval(()=>{if(S.wEdit||S.wGallery||S.wSync||wDrag||isTyping())return;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(/^\d{14}$/.test(v)&&v>window.RP_BUILD)location.replace(location.pathname+'?v='+v)}).catch(()=>{})},5*60e3);
   let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{const c=WG.C;wGrid();if(WG.C!==c||true){WLay=null;wLoad();wSave()}wRender(false)},250)});
   setTimeout(()=>{if(window.RP_STANDALONE&&SY.tok&&!lsg(SYNC.init))syncNow('pull')},2600);
   setTimeout(()=>{if(window.RP_STANDALONE&&!SY.tok&&lsg('rp-vault-key')){S.wSync=true;wRender(false)}},1500);
