@@ -59,7 +59,8 @@ self.addEventListener('fetch', e => {
   if (u.origin !== location.origin) return;
   if (u.pathname.startsWith(BASE + '_blob/')) { e.respondWith(blob(u.pathname.slice(BASE.length + 6)).catch(() => new Response('', { status: 404 }))); return; }
   if (e.request.mode === 'navigate') {
-    e.respondWith(fetch(e.request).then(r => { if (r.ok) { const c = r.clone(); caches.open(SHELL).then(s => s.put(BASE, c)); } return r; })
-      .catch(async () => (await (await caches.open(SHELL)).match(BASE)) || new Response('Hors ligne', { status: 503 })));
+    const key = u.pathname.endsWith('widgets.html') ? BASE + 'widgets.html' : BASE;
+    e.respondWith(fetch(e.request).then(r => { if (r.ok) { const c = r.clone(); caches.open(SHELL).then(s => s.put(key, c)); } return r; })
+      .catch(async () => (await (await caches.open(SHELL)).match(key)) || new Response('Hors ligne', { status: 503 })));
   }
 });
