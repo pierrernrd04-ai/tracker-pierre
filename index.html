@@ -2873,7 +2873,7 @@ html.wmode .toast{bottom:84px}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261027141248';
+var LSK='rp-vault-key',BUILD='20261031132817';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -5294,7 +5294,7 @@ async function impStore(blob){const as=S.assetsBroken?null:await assetsGet();
   const col=photoCol();
   if(col){let b=await shrinkTo(blob,760,.68),u=b?await blobToDataURL(b):'';if(u.length>220000){b=await shrinkTo(blob,600,.6);u=b?await blobToDataURL(b):''}if(!u)throw{code:'decode'};const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await pTimeout(dbSetRetry(col.doc(id),{img:u,t:Date.now()}),40000,'timeout');PCACHE.set(id,u);return{k:'d',id}}
   return{k:'s',src:URL.createObjectURL(blob)}}
-function impKeep(it,r){const J=IMP;const meta={t:it.t||null,up:Date.now(),...(it.hash?{h:it.hash}:{}),...(J&&J.mode==='people'?{ai:1}:{})};
+function impKeep(it,r){const J=IMP;const meta={t:it.t||null,up:Date.now(),...(it.hash?{h:it.hash}:{}),...(J&&(J.mode==='people'||J.mode==='local')?{ai:1}:{})};
   if(r.k==='s'){const sid='s'+Date.now()+Math.random().toString(36).slice(2,6);S.sessPhotos.push({k:'s',id:sid,src:r.src});J&&J.sess++}else plibAdd(r.k,r.id,meta)}
 
 async function addMotivPhotos(files,opt){opt=opt||{};
@@ -5305,11 +5305,12 @@ async function addMotivPhotos(files,opt){opt=opt||{};
   const m=imem(),fresh=imgs.filter(f=>!m.sig.has(fSig(f))),skip=imgs.length-fresh.length;
   if(!fresh.length){toast(`Ces ${imgs.length} photos ont déjà été triées. Choisis la suite de ta galerie.`,{label:'Choisir',fn:()=>{S.picking=Date.now();try{PICK.click()}catch(e){}}});return}
   uploading=true;hideMotiv();
-  IMP={state:'run',files:fresh,n:fresh.length,vids,skip,dec:0,cls:0,kept:0,rej:0,dup:0,fail:0,ufail:0,unsure:0,sess:0,calls:0,mode:S.settings.impPeople===false||window.RP_STANDALONE?'all':'people',
+  IMP={state:'run',files:fresh,n:fresh.length,vids,skip,dec:0,cls:0,kept:0,rej:0,dup:0,fail:0,ufail:0,unsure:0,sess:0,calls:0,mode:S.settings.impPeople===false?'all':window.RP_STANDALONE?'local':'people',
     cap20:!opt.zip&&picked.length===20,zip:!!opt.zip,stop:false,userPause:false,ctls:new Set(),rejects:[],thumbs:[],t0:Date.now(),min:false,upQ:[],view:'run',sel:new Set()};
   impMount();wake(true);diag('tri',{n:fresh.length,vids,skip,mode:IMP.mode});
   const J=IMP;
   if(J.mode==='people'){const sm=await impSample();if(!sm){const act=await impPause('nosample');if(act==='all')J.mode='all';else if(act==='retry')SMP=undefined;else{impFinish();return}}}
+  if(J.mode==='local'){J.aiLoading=true;impRender(true);try{await aiLoad()}catch(e){J.mode='all';toast("Le tri automatique n'a pas pu démarrer sur cet appareil : toutes les photos sont importées.")}J.aiLoading=false;impRender(true)}
   J.P=await impPreset(J.n);J.per=(J.mode==='people'?SMP_MAX:4)*PER_SHEET;
   const known=knownHashes().map(hPair).filter(Boolean),ready=[];let next=0,prodDone=false,clsBusy=0;
   const hold=async()=>{while(J.userPause&&!J.stop)await pSleep(250)};
@@ -5324,7 +5325,7 @@ async function addMotivPhotos(files,opt){opt=opt||{};
       ready.push({items,sheets:J.mode==='people'&&items.length?await impSheets(items):[]})}
     prodDone=true};
   const classifier=async()=>{while(!J.stop){await hold();const ch=ready.shift();if(!ch){if(prodDone&&!clsBusy)break;await pSleep(120);continue}
-      clsBusy++;try{const keep=ch.items.length?(J.mode==='people'&&ch.sheets.length?await impClassify(ch):new Set(ch.items.map((_,i)=>i))):new Set();if(J.stop)break;
+      clsBusy++;try{const keep=ch.items.length?(J.mode==='local'?await aiClassify(ch):J.mode==='people'&&ch.sheets.length?await impClassify(ch):new Set(ch.items.map((_,i)=>i))):new Set();if(J.stop)break;
         ch.items.forEach((it,i)=>{if(it.tile){it.tile.width=0;it.tile=null}if(keep.has(i))J.upQ.push(it);else{J.rej++;J.rejects.push({f:it.f,thumb:it.thumb,sig:it.sig,hash:it.hash,t:it.t});it.blob=null;impMark(it,true)}});
         J.cls+=ch.items.length;impRender()}finally{clsBusy--}}};
   const uploader=async()=>{while(true){const it=J.upQ.shift();if(!it){if(J.stop||(prodDone&&!clsBusy&&!ready.length))break;await pSleep(150);continue}
@@ -5350,7 +5351,7 @@ const IMP_MSG={nosample:["Claude ne peut pas trier ici","Le tri automatique a be
   invalid_json:["Réponse illisible","Claude a mal répondu sur ce lot. Touche « Réessayer »."]};
 function impPaint(full){const J=IMP,el=$('#imp');if(!J)return;
   const pill=$('#impPill');
-  const doneN=Math.min(J.n,J.cls+J.dup+J.fail+(J.rej-J.rejects.length));
+  const doneN=Math.min(J.n,(J.mode==='local'?Math.max(J.cls,J.aiN||0):J.cls)+J.dup+J.fail+(J.rej-J.rejects.length));
   const p=J.state==='done'?1:J.n?doneN/J.n:0;
   if(pill){pill.querySelector('.pr').style.setProperty('--p',Math.round(p*100)+'%');pill.querySelector('b').textContent=J.state==='done'?'Terminé':Math.round(p*100)+' %';pill.querySelector('span').textContent=`${J.kept} gardée${J.kept>1?'s':''}`}
   if(!el||el.hidden)return;el.classList.toggle('paused',J.state==='pause'||J.userPause);el.classList.toggle('done',J.state==='done');
@@ -5369,18 +5370,18 @@ function impPhase(doneN){const J=IMP;if(J.state==='done')return'';
   return`Envoi des dernières photos · ${J.upQ.length} restante${J.upQ.length>1?'s':''}<small>${eta}</small>`}
 function impBody(){const J=IMP;
   const head=(t,sub)=>`<i class="orb o1"></i><i class="orb o2"></i><div class="imp-top"><div><div class="hello">${ic('img',14)} ${sub}</div><h3>${t}</h3></div><button class="imp-x" data-a="${J.state==='done'?'impClose':'impMin'}" aria-label="${J.state==='done'?'Fermer':'Réduire'}">${ic(J.state==='done'?'x':'minus',18)}</button></div>`;
-  const stats=`<div class="imp-stats"><div class="on"><b id="impK">${J.kept}</b><span>${J.mode==='people'?'avec des personnes':'gardées'}</span></div><div><b id="impR">${J.rej}</b><span>sans personne</span></div><div><b id="impV">${J.vids}</b><span>vidéos écartées</span></div><div><b id="impD">${J.dup+J.skip}</b><span>doublons, déjà vues</span></div></div>`;
+  const stats=`<div class="imp-stats"><div class="on"><b id="impK">${J.kept}</b><span>${J.mode!=='all'?'avec des personnes':'gardées'}</span></div><div><b id="impR">${J.rej}</b><span>sans personne</span></div><div><b id="impV">${J.vids}</b><span>vidéos écartées</span></div><div><b id="impD">${J.dup+J.skip}</b><span>doublons, déjà vues</span></div></div>`;
   if(J.view==='rej'){const L=J.rejects;
-    return head(`${L.length} photo${L.length>1?'s':''} écartée${L.length>1?'s':''}`,'Sans personne, selon Claude')+`<p class="imp-phase" style="text-align:left;font-weight:500;color:var(--hero-muted)">Touche celles que tu veux garder quand même.</p>
+    return head(`${L.length} photo${L.length>1?'s':''} écartée${L.length>1?'s':''}`,J.mode==='local'?'Sans personne ou capture d\'écran':'Sans personne, selon Claude')+`<p class="imp-phase" style="text-align:left;font-weight:500;color:var(--hero-muted)">Touche celles que tu veux garder quand même.</p>
     <div class="imp-rej">${L.map((r,i)=>`<button class="${J.sel.has(i)?'on':''}" data-a="impPick" data-v="${i}" aria-pressed="${J.sel.has(i)}" aria-label="Photo écartée ${i+1}"><img src="${r.thumb}" alt="" loading="lazy"><i>${ic('check',13)}</i></button>`).join('')}</div>
     <div class="imp-btns"><button class="btn ghost" data-a="impBack">Retour</button><button class="btn go" data-a="impRescue" ${J.sel.size?'':'disabled'}>${ic('check',17)} Garder ${J.sel.size||''}</button></div>`}
   if(J.state==='done'){const s=Math.round((Date.now()-J.t0)/1000),dur=s<60?`${s} s`:`${Math.floor(s/60)} min ${String(s%60).padStart(2,'0')}`;
-    return head(J.kept?`${J.kept} photo${J.kept>1?'s':''} ajoutée${J.kept>1?'s':''}`:'Aucune photo ajoutée',J.mode==='people'?'Tri terminé · Claude':'Import terminé')+`
+    return head(J.kept?`${J.kept} photo${J.kept>1?'s':''} ajoutée${J.kept>1?'s':''}`:'Aucune photo ajoutée',J.mode==='people'?'Tri terminé · Claude':J.mode==='local'?'Tri terminé · sur ton iPhone':'Import terminé')+`
     <div class="imp-ring">${ring(1,184,12)}<div class="imp-c"><b>${N(J.kept)}</b><span>en ${dur}</span></div></div>${stats}
     ${J.err==='quota'?`<div class="imp-note warn">Le stockage de l'appli est plein. Supprime des photos dont tu ne veux plus pour en ajouter d'autres.</div>`:''}
     ${J.full?`<div class="imp-note warn">Limite de ${i0(MAXP)} photos atteinte.</div>`:''}
     ${J.fail+J.ufail?`<div class="imp-note">${J.fail+J.ufail} photo${J.fail+J.ufail>1?'s':''} non enregistrée${J.fail+J.ufail>1?'s':''} (format illisible ou réseau). Rechoisis le même lot plus tard : seules celles-là seront refaites.</div>`:''}
-    ${J.unsure?`<div class="imp-note">${J.unsure} photo${J.unsure>1?'s':''} gardée${J.unsure>1?'s':''} sans vérification : Claude n'a pas pu les regarder.</div>`:''}
+    ${J.unsure?`<div class="imp-note">${J.unsure} photo${J.unsure>1?'s':''} gardée${J.unsure>1?'s':''} sans vérification : ${J.mode==='local'?'le tri n\'a pas pu les analyser':'Claude n\'a pas pu les regarder'}.</div>`:''}
     ${J.cap20?`<div class="imp-note warn"><b style="color:inherit">Tu étais bloqué à 20 ?</b> C'est la limite du sélecteur de l'appli Claude sur iPhone. Pour en envoyer des centaines d'un coup : ouvre l'appli dans Safari, ou importe un .zip (carte « Import massif »).</div>`:''}
     ${J.sess?`<div class="imp-note warn">${J.sess} photo${J.sess>1?'s':''} gardée${J.sess>1?'s':''} pour cette session seulement : le stockage de l'appli n'a pas répondu.</div>`:''}
     <div class="imp-note">Tes photos sont dans l'onglet Photos, prêtes à être triées entre <b>Pierre qui avance</b> et <b>Pierre d'avant</b>. Pour la suite de ta galerie, choisis le lot suivant : les photos déjà vues sont reconnues et sautées.</div>
@@ -5388,7 +5389,7 @@ function impBody(){const J=IMP;
     <div class="imp-btns">${J.rejects.length?`<button class="btn ghost" data-a="impRej">Voir les écartées (${J.rejects.length})</button>`:''}<button class="btn go" data-a="impMore">${ic('plus',17)} Lot suivant</button></div>
     <div class="imp-btns" style="margin-top:8px"><button class="btn ghost" data-a="impClose">Fermer</button></div>`}
   const pz=J.state==='pause'&&J.pause,msg=pz&&(IMP_MSG[pz]||IMP_MSG.upstream_error);
-  return head(J.mode==='people'?'Je garde les photos avec des personnes':'Import de tes photos',J.mode==='people'?'Tri automatique · Claude':'Sans tri')+`
+  return head(J.mode!=='all'?'Je garde les photos avec des personnes':'Import de tes photos',J.mode==='people'?'Tri automatique · Claude':J.mode==='local'?'Tri automatique · sur ton iPhone':'Sans tri')+`
     <div class="imp-ring"><span class="imp-scan"></span>${ring(0,184,12)}<div class="imp-c"><b id="impPct">0%</b><span id="impSub">0 / ${J.n} analysées</span></div></div>
     <p class="imp-phase" id="impPh"></p>${stats}<div class="imp-strip" id="impStrip"></div>
     ${pz?`<div class="imp-note warn"><b style="color:inherit">${esc(msg[0])}.</b> ${esc(msg[1])}</div><div class="imp-btns"><button class="btn go" data-a="impResume">${ic('repeat',16)} Réessayer</button><button class="btn ghost" data-a="impAll">Tout importer sans tri</button></div><div class="imp-btns" style="margin-top:8px"><button class="btn ghost" data-a="impStop">Arrêter ici</button></div>`
@@ -5415,18 +5416,18 @@ Object.assign(ACT,{
   impForget(t){if(!S.forgetArm){S.forgetArm=true;t.textContent='Toucher encore pour tout réanalyser';setTimeout(()=>{S.forgetArm=false},3500);return}S.forgetArm=false;IMEM={sig:new Set(),rej:new Set()};try{localStorage.removeItem(IMP_LS)}catch(e){}toast('Mémoire du tri effacée : tout sera réanalysé.');render()},
 });
 /* carte d'import en tête de l'onglet Photos */
-function impHub(){const J=IMP,SA=!!window.RP_STANDALONE,on=!SA&&S.settings.impPeople!==false,n=allPhotos().length,m=imem();
-  if(J&&J.state!=='done')return`<section class="imp-hub">${ORBS}<div class="hello">${ic('img',14)} Tri en cours</div><h3>${J.kept} photo${J.kept>1?'s':''} gardée${J.kept>1?'s':''} sur ${J.n}</h3><p>${J.mode==='people'?'Claude écarte les vidéos, les paysages et les doublons.':'Import sans tri.'}</p><button class="btn block go" data-a="impOpen" style="background:var(--accent);color:var(--on-accent)">Voir le tri</button></section>`;
+function impHub(){const J=IMP,SA=!!window.RP_STANDALONE,on=S.settings.impPeople!==false,n=allPhotos().length,m=imem();
+  if(J&&J.state!=='done')return`<section class="imp-hub">${ORBS}<div class="hello">${ic('img',14)} Tri en cours</div><h3>${J.kept} photo${J.kept>1?'s':''} gardée${J.kept>1?'s':''} sur ${J.n}</h3><p>${J.mode==='people'?'Claude écarte les vidéos, les paysages et les doublons.':J.mode==='local'?'Ton iPhone écarte les captures d\'écran, les paysages, les vidéos et les doublons.':'Import sans tri.'}</p><button class="btn block go" data-a="impOpen" style="background:var(--accent);color:var(--on-accent)">Voir le tri</button></section>`;
   return`<section class="imp-hub">${ORBS}<div class="hello">${ic('bolt',14)} Import massif</div><h3>Toute ta galerie, d'un coup</h3>
-    <p>Sélectionne jusqu'à 2 500 photos. ${on?"Claude garde seulement celles où il y a des personnes et écarte les vidéos, les paysages et les doublons.":"Toutes les photos sont gardées, sauf les vidéos et les doublons."}</p>
+    <p>Sélectionne jusqu'à 2 500 photos. ${on?(SA?"Ton iPhone fait le tri lui-même, sans clé et sans rien envoyer : il garde seulement les photos où il y a des personnes et écarte les captures d'écran, les paysages, les vidéos et les doublons.":"Claude garde seulement celles où il y a des personnes et écarte les vidéos, les paysages et les doublons."):"Toutes les photos sont gardées, sauf les vidéos et les doublons."}</p>
     <label class="btn block filebtn go" for="pickPhotos">${ic('plus',18)} Choisir mes photos</label>
     ${SA?'':`<div class="imp-more"><b>${ic('bolt',15)} Bloqué à 20 photos ?</b><p>C'est la limite du sélecteur dans l'appli Claude. Deux façons d'en envoyer des centaines d'un coup :</p>
       <div class="imp-way"><i>1</i><div><strong>Dans Safari</strong><span>Ouvre cette appli dans Safari (connecté à claude.ai) : le sélecteur de photos n'a plus de limite.</span><a class="btn sm ghost" href="${esc(APP_URL)}" target="_blank" rel="noopener">${ic('ext',14)} Ouvrir dans Safari</a></div></div>
       <div class="imp-way"><i>2</i><div><strong>Avec un fichier .zip, ici</strong><span>App Photos : « Sélectionner », glisse pour cocher des centaines de photos, Partager, « Enregistrer dans Fichiers ». App Fichiers : appui long sur le dossier, « Compresser ». Puis choisis le .zip ici.</span><label class="btn sm ghost filebtn" for="pickZip">${ic('plus',14)} Choisir un .zip</label></div></div></div>`}
-    ${SA?'':`<div class="wrap" style="margin-top:12px"><button class="chip ${on?'on':''}" data-a="impPeople" aria-pressed="${on}">${on?ic('check',14):''} Seulement les photos avec des personnes</button></div>`}
+    ${`<div class="wrap" style="margin-top:12px"><button class="chip ${on?'on':''}" data-a="impPeople" aria-pressed="${on}">${on?ic('check',14):''} Seulement les photos avec des personnes</button></div>`}
     <div class="ways"><span>${ic('img',13)} ${i0(n)} / ${i0(MAXP)} photos</span>${m.sig.size?`<span>${ic('check',13)} ${i0(m.sig.size)} déjà triées</span><button class="tlink" style="color:var(--hero-muted)" data-a="impForget">Tout réanalyser</button>`:''}</div>
     <p style="margin:12px 0 0;font-size:12.5px">Par lots de 300 à 500 photos, c'est le plus fiable. Les vidéos du .zip sont ignorées.</p></section>`}
-function photosGuide(){return`<div class="ph-guide"><h3>Commence par la carte « Import massif » ci-dessus</h3><p class="hint" style="margin:0">Claude regarde chaque photo et garde seulement celles où il y a des personnes : toi et tes proches.</p></div>`}
+function photosGuide(){return`<div class="ph-guide"><h3>Commence par la carte « Import massif » ci-dessus</h3><p class="hint" style="margin:0">${window.RP_STANDALONE?'Ton iPhone regarde chaque photo, sans clé ni envoi, et garde seulement celles où il y a des personnes : toi et tes proches.':'Claude regarde chaque photo et garde seulement celles où il y a des personnes : toi et tes proches.'}</p></div>`}
 function render(enter,dir){
   renderChrome();
   const m=$('#main'),V={
@@ -6807,6 +6808,50 @@ function render(enter,dir){
   S.flash=null;wireLazy(m);trWire(m);if(typeof zWire==='function')zWire(m);diWire(m);
   if(enter){m.classList.remove('enter','from-r','from-l');void m.offsetWidth;m.classList.add('enter');if(dir)m.classList.add('from-'+dir);[...m.children].forEach((c,i)=>c.style.setProperty('--i',i));countUp(m);clearTimeout(render._t);render._t=setTimeout(()=>m.classList.remove('enter','from-r','from-l'),1500)}
 }
+
+/* =================== v26 : tri automatique des photos SUR L'APPAREIL (version GitHub, sans clé ni envoi) ===================
+   Détection locale (bibliothèque Human, licence MIT, servie depuis ai/) : visages (BlazeFace), silhouette (MoveNet), objets (CenterNet, classe « person »).
+   Règle réglée sur un jeu de test : 42/42 photos avec personnes gardées, 22/22 sans personne écartées. */
+const AI={h:null,p:null,lock:Promise.resolve(),be:''};
+function aiBase(){return location.pathname.replace(/[^/]*$/,'')}
+function aiScript(src){return new Promise((ok,ko)=>{const s=document.createElement('script');s.src=src;s.async=true;s.onload=()=>ok();s.onerror=()=>ko({code:'ai_load'});document.head.appendChild(s)})}
+function aiCfg(b,be){return{modelBasePath:b+'ai/models/',backend:be,async:true,warmup:'none',cacheSensitivity:0,debug:false,filter:{enabled:false},
+  face:{enabled:true,detector:{modelPath:'blazeface.json',rotation:false,maxDetected:5,minConfidence:0.2,return:false},mesh:{enabled:false},iris:{enabled:false},description:{enabled:false},emotion:{enabled:false},antispoof:{enabled:false},liveness:{enabled:false},attention:{enabled:false}},
+  body:{enabled:true,modelPath:'movenet-lightning.json',minConfidence:0.1,maxDetected:1},
+  hand:{enabled:false},object:{enabled:true,modelPath:'centernet.json',minConfidence:0.15,maxDetected:10},gesture:{enabled:false},segmentation:{enabled:false}}}
+async function aiLoad(){if(AI.h)return AI.h;if(AI.p)return AI.p;
+  AI.p=(async()=>{const b=aiBase();if(!window.Human)await aiScript(b+'ai/human.js');if(!window.Human||!Human.Human)throw{code:'ai_load'};
+    for(const be of['webgl','cpu']){try{const h=new Human.Human(aiCfg(b,be));await h.load();
+        const c=document.createElement('canvas');c.width=c.height=96;c.getContext('2d').fillRect(0,0,96,96);await h.detect(c);c.width=c.height=0;
+        AI.h=h;AI.be=be;return h}catch(e){}}
+    throw{code:'ai_load'}})();
+  try{return await AI.p}catch(e){AI.p=null;throw e}}
+/* capture d'écran : PNG très allongé, ou exactement le format de l'écran d'un téléphone */
+function aiShot(f,w,h){const r=Math.max(w,h)/Math.max(1,Math.min(w,h)),png=/png/i.test((f&&f.type)||'')||/\.png$/i.test((f&&f.name)||'');
+  const dr=Math.max(screen.width,screen.height)/Math.max(1,Math.min(screen.width,screen.height));
+  return(png&&r>=1.7)||(dr>=2&&Math.abs(r-dr)<0.012)}
+async function aiLook(h,blob,f){const bm=await createImageBitmap(blob),w=bm.width,hh=bm.height;
+  try{if(aiShot(f,w,hh))return{shot:true,keep:false};
+    const s=Math.min(1,640/Math.max(w,hh)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(hh*s));c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+    const r=await h.detect(c);c.width=c.height=0;
+    const mx=(a,g)=>Math.max(0,...(a||[]).map(g));
+    const face=mx(r.face,x=>x.score||x.boxScore||0),body=mx(r.body,x=>x.score||0),person=mx((r.object||[]).filter(o=>o.label==='person'),o=>o.score||0);
+    return{keep:person>=.33||(person>=.2&&face>=.8)||(face>=.75&&body>=.55),face,body,person}}
+  finally{try{bm.close()}catch(e){}}}
+async function aiClassify(ch){const J=IMP,all=()=>new Set(ch.items.map((_,i)=>i));let h;
+  try{h=await aiLoad()}catch(e){J.unsure+=ch.items.length;return all()}
+  const prev=AI.lock;let rel;AI.lock=new Promise(r=>rel=r);await prev;
+  const keep=new Set();
+  try{for(let i=0;i<ch.items.length;i++){if(J.stop)break;while(J.userPause&&!J.stop)await pSleep(250);const it=ch.items[i];
+      try{const r=await aiLook(h,it.blob,it.f);if(r.shot)J.shots=(J.shots||0)+1;else if(r.keep)keep.add(i)}catch(e){keep.add(i);J.unsure++}
+      J.aiN=(J.aiN||0)+1;if(i%3===2)impRender()}}
+  finally{rel()}
+  return keep}
+/* textes pendant la préparation du tri */
+{const _phV26=impPhase;impPhase=function(n){const J=IMP;if(J&&J.aiLoading)return`Préparation du tri sur ton iPhone<small>Au premier tri, ton iPhone télécharge l'outil de tri (11 Mo), une seule fois.</small>`;
+  if(J&&J.mode==='local'&&J.state!=='done'&&!J.userPause&&n<J.n){const el=(Date.now()-J.t0)/1000,rate=(J.aiN||0)/Math.max(1,el),left=rate>0.05?(J.n-(J.aiN||0))/rate:null;
+    return`Ton iPhone cherche les personnes · ${i0(J.aiN||0)} / ${i0(J.n)}<small>${left==null?'Estimation du temps…':left<60?'Moins d\'une minute':`Encore ≈ ${Math.ceil(left/60)} min`} · garde l'appli ouverte</small>`}
+  return _phV26(n)}}
 
 /* ---------- boot ---------- */
 $('#btn-settings').innerHTML=ic('cog',18);$('#btn-prev').innerHTML=ic('left',18);$('#btn-next').innerHTML=ic('right',18);
