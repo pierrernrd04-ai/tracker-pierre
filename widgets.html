@@ -2835,8 +2835,156 @@ html.wmode .toast{bottom:84px}
 .sy-lively{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:rgba(43,255,136,.08);border:1px solid rgba(43,255,136,.35);margin-bottom:12px}
 .sy-lively>b{color:var(--accent);font-size:15px}.sy-lively ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13.5px;color:var(--muted)}.sy-lively ol b{color:var(--fg)}
 .wsh-p{margin:0;font-size:14px;line-height:1.45;color:#C9D6EA}.wsh-p b{color:#fff}
+
+/* =================== v27 : tri IA pro =================== */
+.ai-eng{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0 10px}
+.ai-eng span{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--hero-line);font-size:11.5px;font-weight:650;color:var(--hero-muted);font-variant-numeric:tabular-nums}
+.ai-eng span:first-child{color:var(--hero-fg)}
+.ai-eng .tb{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.ai-dot{position:relative;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.ai-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--accent);animation:aiPulse 1.6s ease-out infinite}
+@keyframes aiPulse{from{transform:scale(1);opacity:.7}to{transform:scale(2.8);opacity:0}}
+.ai-live{min-height:196px;border-radius:18px;background:rgba(0,0,0,.28);border:1px solid var(--hero-line);overflow:hidden;position:relative}
+.ai-live:empty::before{content:"En attente de la première photo…";position:absolute;inset:0;display:grid;place-items:center;color:var(--hero-muted);font-size:13px}
+.ai-fr{display:flex;align-items:center;justify-content:center;width:100%}
+.ai-im{position:relative;flex:none}
+.ai-im img{display:block;width:100%;height:100%;object-fit:cover;border-radius:4px}
+.bx{position:absolute;border:2px solid var(--accent);border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 14px color-mix(in srgb,var(--accent) 45%,transparent);animation:aiBox .35s cubic-bezier(.3,1.4,.5,1) both;pointer-events:none}
+.bx.p{border-color:#5BE3FF;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 12px rgba(91,227,255,.35)}
+.bx.o{border-color:#FFB547;border-style:dashed;box-shadow:none}
+.bx em{position:absolute;left:-2px;bottom:100%;margin-bottom:2px;font:700 10px/1 var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-style:normal;white-space:nowrap;padding:3px 5px;border-radius:5px;background:var(--accent);color:#0A1A3F;letter-spacing:.01em}
+.bx.p em{background:#5BE3FF}.bx.o em{background:#FFB547}
+.bx[style*="top:0"] em,.bx[style*="top:1."] em,.bx[style*="top:2."] em,.bx[style*="top:3."] em,.bx[style*="top:4."] em{bottom:auto;top:0;margin:0}
+@keyframes aiBox{from{opacity:0;transform:scale(1.18)}to{opacity:1;transform:none}}
+.ai-scan{position:absolute;left:0;right:0;top:0;height:34%;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--accent) 22%,transparent) 85%,var(--accent));opacity:.5;animation:aiScan 1.5s cubic-bezier(.45,0,.55,1) infinite;pointer-events:none;border-bottom:1px solid var(--accent)}
+@keyframes aiScan{0%{transform:translateY(-100%)}100%{transform:translateY(300%)}}
+.ai-rd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 10px;background:rgba(0,0,0,.25);border-top:1px solid var(--hero-line)}
+.ai-vd{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:7px;font-size:11.5px;font-weight:750;letter-spacing:.01em}
+.ai-vd.ok{background:var(--accent);color:#0A1A3F}
+.ai-vd.no{background:rgba(255,255,255,.1);color:var(--hero-fg)}
+.ai-mx{font-size:11.5px;color:var(--hero-muted);font-variant-numeric:tabular-nums}
+.ai-mx b{color:var(--hero-fg);font-weight:700}
+.ai-boot{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px}
+.ai-boot b{font-size:15px}.ai-boot small{color:var(--hero-muted);font-size:12.5px}
+.ai-spin{width:30px;height:30px;border-radius:50%;border:3px solid var(--hero-line);border-top-color:var(--accent);animation:aiRot .8s linear infinite;display:inline-block}
+.ai-spin.sm{width:13px;height:13px;border-width:2px;vertical-align:-2px;border-color:var(--line);border-top-color:currentColor}
+@keyframes aiRot{to{transform:rotate(360deg)}}
+.ai-prog{margin:12px 0 10px}
+.ai-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.ai-bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 60%,#5BE3FF),var(--accent));box-shadow:0 0 12px var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.ai-bar.lt{background:var(--soft)}.ai-bar.lt i{box-shadow:none;background:var(--fg)}
+.ai-pl{display:flex;align-items:baseline;gap:8px;margin-top:7px;font-size:12px;color:var(--hero-muted);font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.ai-pl b{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-.02em}
+.ai-pl #aiEta{margin-left:auto}
+.ai-pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:0 0 8px;position:relative}
+.ai-pipe div{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid transparent;min-width:0;text-align:center}
+.ai-pipe i{color:var(--hero-muted);display:grid}
+.ai-pipe b{font-size:14px;font-weight:750;font-variant-numeric:tabular-nums;line-height:1.1}
+.ai-pipe span{font-size:10px;color:var(--hero-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ai-pipe .has i{color:var(--hero-fg)}
+.ai-pipe .act{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.ai-pipe .act i{color:var(--accent);animation:aiBlink 1s ease-in-out infinite alternate}
+@keyframes aiBlink{from{opacity:.45}to{opacity:1}}
+.ai-cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ai-cats:empty{display:none}
+.ai-cat{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--hero-line);font-size:12px;font-weight:600;animation:popin .4s both}
+.ai-cat b{color:var(--accent);font-variant-numeric:tabular-nums}
+.ai-cat.lt{background:var(--surface);border-color:var(--line);color:var(--fg)}
+.ai-log{margin-top:10px;border-radius:14px;background:#050B1C;border:1px solid var(--hero-line);padding:8px 10px 6px;font:500 11.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#B9C6E6;overflow:hidden}
+.ai-log-h{display:flex;align-items:center;gap:5px;color:#6E7EA6;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.ai-log .ln{display:flex;gap:8px;white-space:nowrap;animation:aiLn .3s both}
+.ai-log .ln:nth-child(n+2){opacity:.82}.ai-log .ln:nth-child(n+4){opacity:.6}.ai-log .ln:nth-child(n+5){opacity:.42}
+.ai-log .fn{color:#E6ECFF;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
+.ai-log .sc{color:#6E7EA6;flex:none}
+.ai-log b{margin-left:auto;font-weight:700;flex:none}
+.ai-log .ok b{color:var(--accent)}.ai-log .no b{color:#FF8F8F}
+.ai-log .mute{color:#6E7EA6}
+@keyframes aiLn{from{opacity:0;transform:translateY(-4px)}}
+.ai-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px;margin:14px 0 4px}
+.ai-sum div{padding:11px 6px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--hero-line);text-align:center}
+.ai-sum b{display:block;font-size:19px;font-weight:800;color:var(--accent);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ai-sum span{font-size:11px;color:var(--hero-muted)}
+.ai-blk{margin-top:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--hero-line)}
+.ai-blk h4{display:flex;align-items:center;gap:6px;font-size:13px;margin:0 0 8px;color:var(--hero-fg)}
+.ai-br{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) auto;align-items:center;gap:8px;font-size:12.5px;margin:5px 0}
+.ai-br span{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-br i{height:7px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.ai-br i b{display:block;height:100%;border-radius:inherit;background:var(--accent);animation:fillw 1s cubic-bezier(.2,.8,.2,1) both}
+.ai-br em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right}
+.ai-br.sm{grid-template-columns:6.5em minmax(0,1fr) 4.6em;font-size:12.5px;color:var(--muted)}
+.ai-br.sm i{background:var(--soft)}.ai-br.sm i b{background:var(--fg)}
+.ai-br.sm em{color:var(--fg)}
+.ai-why{display:flex;flex-wrap:wrap;gap:6px}
+.ai-why span{font-size:12.5px;padding:5px 9px;border-radius:9px;background:rgba(255,255,255,.07);color:var(--hero-muted)}
+.ai-why b{color:var(--hero-fg)}
+.imp-rej button{position:relative}
+.ai-rz{position:absolute;left:4px;bottom:4px;max-width:calc(100% - 8px);text-decoration:none;font-size:9.5px;font-weight:750;padding:2px 5px;border-radius:5px;background:rgba(5,11,28,.82);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-rz.floue{background:rgba(180,83,9,.92)}.ai-rz.capture{background:rgba(59,91,219,.92)}
+/* carte d'import */
+.ai-steps{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:0;margin:0 0 14px}
+.ai-steps li{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid var(--hero-line);font-size:11.5px;font-weight:650}
+.ai-steps li.ar{background:none;border:0;padding:0;color:var(--hero-muted)}
+.ai-steps svg{color:var(--accent)}
+/* onglet Photos */
+.ai-chip svg{color:inherit}
+.ai-card h4.ai-h4{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:16px 0 8px}
+.ai-cov{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;margin-bottom:10px}
+.ai-cov b{font-size:24px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ai-cov span{font-size:12.5px;color:var(--muted);margin-left:3px}
+.ai-job{display:grid;gap:10px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.ai-job.ok{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--good)}
+.ai-jl b{display:flex;align-items:center;gap:6px;font-size:14px}
+.ai-jl span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+.ai-job.on{border-color:color-mix(in srgb,var(--fg) 25%,var(--line))}
+.ai-job .btn.sm{justify-self:start}
+.ai-rules{display:grid;gap:6px}
+.ai-rule{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;width:100%;text-align:left;padding:11px 12px;border-radius:15px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;cursor:pointer;transition:border-color .2s,background .2s}
+.ai-rule[aria-checked="true"]{border-color:color-mix(in srgb,var(--fg) 22%,var(--line))}
+.ai-rule .ri{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--soft);color:var(--fg)}
+.ai-rule[aria-checked="true"] .ri{background:var(--accent);color:var(--on-accent)}
+.ai-rule b{display:block;font-size:14px;font-weight:650;line-height:1.3}
+.ai-rule em{display:block;font-style:normal;font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:2px}
+.ai-rule.fx{cursor:default}
+.ai-rule.fx>svg{color:var(--good)}
+.ai-sw{position:relative;width:44px;height:26px;border-radius:99px;background:var(--soft);border:1px solid var(--line);transition:background .2s;flex:none}
+.ai-sw::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
+.ai-sw.on{background:var(--fg);border-color:var(--fg)}
+.ai-sw.on::after{transform:translateX(18px);background:var(--accent)}
+.ai-seg button{height:40px;font-size:13.5px}
+.ai-code{margin-top:14px;border-radius:16px;border:1px solid var(--line);background:var(--surface);overflow:hidden}
+.ai-code summary{display:flex;align-items:center;gap:7px;padding:12px 14px;font-weight:650;font-size:14px;cursor:pointer;list-style:none}
+.ai-code summary::-webkit-details-marker{display:none}
+.ai-code summary::after{content:"›";margin-left:auto;font-size:20px;line-height:1;color:var(--muted);transition:transform .2s}
+.ai-code[open] summary::after{transform:rotate(90deg)}
+.ai-code pre{margin:0 10px;padding:12px;border-radius:12px;background:#050B1C;color:#D5DEF5;font:500 10.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:auto;white-space:pre;-webkit-overflow-scrolling:touch}
+.ai-code pre i{font-style:normal}
+.ai-code pre .k{color:#C792EA}.ai-code pre .f{color:#82AAFF}.ai-code pre .n{color:#F78C6C}.ai-code pre .s{color:#C3E88D}.ai-code pre .c{color:#6E7EA6}
+.ai-code>p{padding:0 14px 12px}
+.ai-ah{margin:-2px 0 10px}
+.ai-albums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ai-alb{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;border:0;padding:0;background:var(--soft);color:#fff;text-align:left;cursor:pointer;isolation:isolate}
+.ai-alb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.ai-alb::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(5,13,36,0) 35%,rgba(5,13,36,.85))}
+.ai-alb span{position:absolute;left:10px;right:10px;bottom:9px}
+.ai-alb b{display:block;font-size:14.5px;font-weight:750;letter-spacing:-.01em;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.ai-alb em{display:block;font-style:normal;font-size:12px;opacity:.85}
+.ai-alb>i{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:#0A1A3F}
+.ai-alb.vf>i{background:#FFB547}
+.ai-sheet{margin-top:12px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--card)}
+.ai-sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ai-sh-h>b{display:flex;align-items:center;gap:6px;font-size:14.5px}
+#aiSee .ai-fr{border-radius:12px;background:#050B1C;padding:6px 0}
+#aiSee .bx em{font-size:10.5px}
+.ai-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.ai-code pre{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+@media (prefers-reduced-motion:reduce){.ai-scan,.ai-dot::after,.ai-pipe .act i,.ai-spin{animation:none}.bx,.ai-log .ln,.ai-cat{animation:none}}
+.ai-leg{display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:12px;color:var(--muted)}
+.ai-leg span{display:inline-flex;align-items:center;gap:5px}
+.ai-leg i{width:11px;height:11px;border-radius:3px;border:2px solid var(--accent)}
+.ai-leg i.p{border-color:#5BE3FF}.ai-leg i.o{border-color:#FFB547;border-style:dashed}
+.ai-scw{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:4px}
 </style>
-<script>(function(){try{var h=location.hash.slice(1);if(!h)return;var p=new URLSearchParams(h),k=p.get('k'),t=p.get('t');if(k){localStorage.setItem('rp-vault-key',k);window.RP_FROMLINK=true}if(t)localStorage.setItem('rp-sync-tok',t);if(k||t)history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();window.RP_WIDGETS=true;window.RP_BUILD='20261031132817';</script><div id="rp-lock" hidden><div class="rl-in">
+<script>(function(){try{var h=location.hash.slice(1);if(!h)return;var p=new URLSearchParams(h),k=p.get('k'),t=p.get('t');if(k){localStorage.setItem('rp-vault-key',k);window.RP_FROMLINK=true}if(t)localStorage.setItem('rp-sync-tok',t);if(k||t)history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();window.RP_WIDGETS=true;window.RP_BUILD='20261031165043';</script><div id="rp-lock" hidden><div class="rl-in">
 <img src="icon-192.png" alt="" width="84" height="84" class="rl-logo">
 <h1>DO IT<span>PIERRE</span></h1>
 <p class="rl-sub">Ton tracker est privé. Entre ton mot de passe pour l'ouvrir.</p><div class="rl-wall"><b>Tu vois cet écran en fond d'écran ?</b><p>Lively ne transmet pas le clavier : impossible de taper le mot de passe ici. Il faut lui donner le <b>lien du bureau</b>, qui contient déjà ta clé.</p><ol><li>Ouvre <b>Chrome</b> et va sur <span class="rl-url">pierrernrd04-ai.github.io/tracker-pierre/widgets.html</span></li><li>Entre ton mot de passe, puis connecte la synchro (fenêtre qui s'ouvre)</li><li>Clique <b>Copier le lien pour Lively</b></li><li>Dans Lively : supprime ce fond d'écran, puis <b>+</b> › <b>Entrer une URL</b> › colle le lien</li></ol><a class="rl-open" href="https://pierrernrd04-ai.github.io/tracker-pierre/widgets.html" target="_blank" rel="noopener">Ouvrir la page dans le navigateur</a><p class="rl-or">Tu es déjà dans Chrome ? Entre simplement ton mot de passe ci-dessous.<br>Pas de clavier ? Utilise <b>Taper à la souris</b> sous le champ.</p></div><style>.rl-wall{margin:4px 0 6px;padding:16px;border-radius:18px;background:rgba(43,255,136,.08);border:1px solid rgba(43,255,136,.35);text-align:left;font-size:14px;line-height:1.45;color:#DDE6F5}.rl-wall b{color:#fff}.rl-wall>b{display:block;font-size:15.5px;margin-bottom:6px;color:#2BFF88}.rl-wall p{margin:0 0 8px}.rl-wall ol{margin:0 0 12px;padding-left:20px;display:grid;gap:5px}.rl-url{font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;color:#9DFFC9;word-break:break-all}.rl-open{display:flex;align-items:center;justify-content:center;height:44px;border-radius:13px;background:#12305A;border:1px solid #1B3A66;color:#fff;font-weight:800;text-decoration:none}.rl-or{margin:10px 0 0!important;font-size:12.5px;color:#9DB0CC;text-align:center}#rp-lock .rl-in{width:min(460px,100%)}</style>
@@ -2873,7 +3021,7 @@ html.wmode .toast{bottom:84px}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261031132817';
+var LSK='rp-vault-key',BUILD='20261031165043';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -5294,7 +5442,7 @@ async function impStore(blob){const as=S.assetsBroken?null:await assetsGet();
   const col=photoCol();
   if(col){let b=await shrinkTo(blob,760,.68),u=b?await blobToDataURL(b):'';if(u.length>220000){b=await shrinkTo(blob,600,.6);u=b?await blobToDataURL(b):''}if(!u)throw{code:'decode'};const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await pTimeout(dbSetRetry(col.doc(id),{img:u,t:Date.now()}),40000,'timeout');PCACHE.set(id,u);return{k:'d',id}}
   return{k:'s',src:URL.createObjectURL(blob)}}
-function impKeep(it,r){const J=IMP;const meta={t:it.t||null,up:Date.now(),...(it.hash?{h:it.hash}:{}),...(J&&(J.mode==='people'||J.mode==='local')?{ai:1}:{})};
+function impKeep(it,r){const J=IMP;const meta={t:it.t||null,up:Date.now(),...(it.hash?{h:it.hash}:{}),...(it.ai?{ai:it.ai}:J&&(J.mode==='people'||J.mode==='local')?{ai:1}:{})};
   if(r.k==='s'){const sid='s'+Date.now()+Math.random().toString(36).slice(2,6);S.sessPhotos.push({k:'s',id:sid,src:r.src});J&&J.sess++}else plibAdd(r.k,r.id,meta)}
 
 async function addMotivPhotos(files,opt){opt=opt||{};
@@ -5311,7 +5459,7 @@ async function addMotivPhotos(files,opt){opt=opt||{};
   const J=IMP;
   if(J.mode==='people'){const sm=await impSample();if(!sm){const act=await impPause('nosample');if(act==='all')J.mode='all';else if(act==='retry')SMP=undefined;else{impFinish();return}}}
   if(J.mode==='local'){J.aiLoading=true;impRender(true);try{await aiLoad()}catch(e){J.mode='all';toast("Le tri automatique n'a pas pu démarrer sur cet appareil : toutes les photos sont importées.")}J.aiLoading=false;impRender(true)}
-  J.P=await impPreset(J.n);J.per=(J.mode==='people'?SMP_MAX:4)*PER_SHEET;
+  J.P=await impPreset(J.n);J.per=J.mode==='local'?8:(J.mode==='people'?SMP_MAX:4)*PER_SHEET;
   const known=knownHashes().map(hPair).filter(Boolean),ready=[];let next=0,prodDone=false,clsBusy=0;
   const hold=async()=>{while(J.userPause&&!J.stop)await pSleep(250)};
   const producer=async()=>{while(next<J.n&&!J.stop){await hold();while(ready.length>=2&&!J.stop)await pSleep(120);if(J.stop)break;
@@ -5326,7 +5474,7 @@ async function addMotivPhotos(files,opt){opt=opt||{};
     prodDone=true};
   const classifier=async()=>{while(!J.stop){await hold();const ch=ready.shift();if(!ch){if(prodDone&&!clsBusy)break;await pSleep(120);continue}
       clsBusy++;try{const keep=ch.items.length?(J.mode==='local'?await aiClassify(ch):J.mode==='people'&&ch.sheets.length?await impClassify(ch):new Set(ch.items.map((_,i)=>i))):new Set();if(J.stop)break;
-        ch.items.forEach((it,i)=>{if(it.tile){it.tile.width=0;it.tile=null}if(keep.has(i))J.upQ.push(it);else{J.rej++;J.rejects.push({f:it.f,thumb:it.thumb,sig:it.sig,hash:it.hash,t:it.t});it.blob=null;impMark(it,true)}});
+        ch.items.forEach((it,i)=>{if(it.tile){it.tile.width=0;it.tile=null}if(keep.has(i))J.upQ.push(it);else{J.rej++;J.rejects.push({f:it.f,thumb:it.thumb,sig:it.sig,hash:it.hash,t:it.t,why:it.why||'vide'});it.blob=null;impMark(it,true)}});
         J.cls+=ch.items.length;impRender()}finally{clsBusy--}}};
   const uploader=async()=>{while(true){const it=J.upQ.shift();if(!it){if(J.stop||(prodDone&&!clsBusy&&!ready.length))break;await pSleep(150);continue}
       if(allPhotos().length>=MAXP){J.full=true;J.stop=true;break}
@@ -6852,6 +7000,308 @@ async function aiClassify(ch){const J=IMP,all=()=>new Set(ch.items.map((_,i)=>i)
   if(J&&J.mode==='local'&&J.state!=='done'&&!J.userPause&&n<J.n){const el=(Date.now()-J.t0)/1000,rate=(J.aiN||0)/Math.max(1,el),left=rate>0.05?(J.n-(J.aiN||0))/rate:null;
     return`Ton iPhone cherche les personnes · ${i0(J.aiN||0)} / ${i0(J.n)}<small>${left==null?'Estimation du temps…':left<60?'Moins d\'une minute':`Encore ≈ ${Math.ceil(left/60)} min`} · garde l'appli ouverte</small>`}
   return _phV26(n)}}
+
+/* =================== v27 : moteur d'analyse IA des photos (fonctions pures) ===================
+   Entrée : le résultat brut de la détection (visages BlazeFace, silhouette MoveNet, objets CenterNet) + l'image réduite.
+   Sortie : des mesures compactes, une décision (garder / écarter + raison) et des albums automatiques. */
+const AI_SPORT=new Set(['sports ball','bicycle','skis','snowboard','surfboard','skateboard','tennis racket','baseball bat','baseball glove','frisbee','kite']);
+const AI_FETE=new Set(['wine glass','bottle','cake']);
+const AI_SENS={
+  prudent:{nom:'Prudente',d:'garde au moindre doute',p:.28,pf:[.18,.75],fb:[.7,.5],sk:[7,.5],g:[2,.1],q:3.5},
+  equilibre:{nom:'Équilibrée',d:'réglage conseillé',p:.33,pf:[.2,.8],fb:[.75,.55],sk:[8,.6],g:[2,.15],q:5},
+  strict:{nom:'Stricte',d:'seulement les photos sans ambiguïté',p:.4,pf:[.25,.85],fb:[.8,.6],sk:[9,.7],g:[2,.25],q:7}};
+const AI_CATS=[
+  ['solo','Toi seul','Une seule personne sur la photo'],
+  ['groupe','Entre proches','Deux personnes ou plus'],
+  ['corps','Corps entier','Silhouette visible des épaules aux genoux : idéal pour suivre ton physique'],
+  ['selfie','Selfies','Un visage en gros plan'],
+  ['sport','Sport','Ballon, vélo, ski, surf, raquette…'],
+  ['fete','Soirées','Verre, bouteille ou gâteau sur la photo']];
+/* netteté : variance du laplacien sur l'image en niveaux de gris, mesurée sur le sujet (visage ou personne) */
+function aiSharp(src,box){try{const W=src.width,H=src.height,s=Math.min(1,360/Math.max(W,H)),w=Math.max(8,Math.round(W*s)),h=Math.max(8,Math.round(H*s));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,w,h);const d=x.getImageData(0,0,w,h).data;c.width=c.height=0;
+    const g=new Float32Array(w*h);for(let i=0,j=0;i<g.length;i++,j+=4)g[i]=d[j]*.299+d[j+1]*.587+d[j+2]*.114;
+    let x0=1,y0=1,x1=w-1,y1=h-1;
+    if(box){const e=.12,bx=Math.max(1,Math.floor((box[0]-box[2]*e)*w)),by=Math.max(1,Math.floor((box[1]-box[3]*e)*h)),bx1=Math.min(w-1,Math.ceil((box[0]+box[2]*(1+e))*w)),by1=Math.min(h-1,Math.ceil((box[1]+box[3]*(1+e))*h));
+      if(bx1-bx>=40&&by1-by>=40){x0=bx;y0=by;x1=bx1;y1=by1}}
+    let n=0,m=0,m2=0;for(let y=y0;y<y1;y++)for(let xx=x0;xx<x1;xx++){const i=y*w+xx,l=4*g[i]-g[i-1]-g[i+1]-g[i-w]-g[i+w];n++;m+=l;m2+=l*l}
+    if(!n)return null;const v=m2/n-(m/n)*(m/n);return Math.round(Math.sqrt(Math.max(0,v))*10)/10}catch(e){return null}}
+const aiBox=b=>Array.isArray(b)&&b.length===4?b.map(v=>Math.round(Math.max(0,Math.min(1,v))*1000)/1000):null;
+/* mesures à partir du résultat brut */
+function aiMeasure(r,src){r=r||{};
+  const faces=(r.face||[]).map(x=>({s:x.score||x.boxScore||x.faceScore||0,b:aiBox(x.boxRaw)})).filter(x=>x.b).sort((a,b)=>b.s-a.s);
+  const objs=(r.object||[]).map(o=>({l:o.label,s:o.score||0,b:aiBox(o.boxRaw)})).filter(o=>o.b);
+  const pers=objs.filter(o=>o.l==='person').sort((a,b)=>b.s-a.s);
+  const bd=(r.body||[])[0],kp={};if(bd)for(const k of bd.keypoints||[])kp[k.part]=k.score||0;
+  const kpN=Object.values(kp).filter(v=>v>=.3).length;
+  const vis=p=>(kp[p]||0)>=.3,sk=vis('nose')&&(vis('leftEye')||vis('rightEye'))&&vis('leftShoulder')&&vis('rightShoulder'),full=!!bd&&(bd.score||0)>=.3&&(vis('leftShoulder')||vis('rightShoulder'))&&(vis('leftHip')||vis('rightHip'))&&(vis('leftKnee')||vis('rightKnee')||vis('leftAnkle')||vis('rightAnkle'));
+  const face=faces.length?faces[0].s:0,person=pers.length?pers[0].s:0,body=bd?(bd.score||0):0;
+  const nF=faces.filter(x=>x.s>=.7).length,nP=pers.filter(x=>x.s>=.4).length;
+  const big=faces.filter(x=>x.s>=.6).reduce((a,x)=>Math.max(a,x.b[2]*x.b[3]),0);
+  const lab=new Set(objs.filter(o=>o.s>=.3).map(o=>o.l));
+  const subj=(faces[0]&&faces[0].s>=.6&&faces[0].b)||(pers[0]&&pers[0].b)||null;
+  let n=Math.max(nF,nP);if(n<1)n=Math.max(faces.filter(x=>x.s>=.5).length,pers.filter(x=>x.s>=.25).length);
+  return{face,person,body,n,nF,nP,big,full,kpN,sk,sport:[...lab].some(l=>AI_SPORT.has(l)),fete:[...lab].some(l=>AI_FETE.has(l)),
+    labels:[...lab].filter(l=>l!=='person'),q:src?aiSharp(src,subj):null,boxes:[...pers.filter(x=>x.s>=.4).slice(0,6).map(x=>({k:'p',s:x.s,b:x.b})),...faces.filter(x=>x.s>=.6).slice(0,6).map(x=>({k:'f',s:x.s,b:x.b})),...objs.filter(o=>o.l!=='person'&&o.s>=.35).slice(0,3).map(o=>({k:'o',l:o.l,s:o.s,b:o.b}))]}}
+/* décision : garder ou écarter, avec la raison */
+function aiDecide(m,o){o=o||{};const T=AI_SENS[o.sens]||AI_SENS.equilibre;
+  const rule=m.person>=T.p?'personne':m.person>=T.pf[0]&&m.face>=T.pf[1]?'personne+visage':m.face>=T.fb[0]&&m.body>=T.fb[1]?'visage+silhouette'
+    :m.kpN>=T.sk[0]&&m.face>=T.sk[1]?'squelette':m.nF>=T.g[0]&&m.person>=T.g[1]?'visages':null;
+  if(!rule)return{keep:false,why:'vide',rule:null};
+  if(o.blur!==false&&m.q!=null&&m.q<T.q)return{keep:false,why:'floue',rule};
+  return{keep:true,why:'ok',rule}}
+/* mode turbo : après le 1er passage rapide (visages + silhouette), « clairement personne » => on saute la détection d'objets, la plus lourde */
+function aiClearNeg(m){return m.face<.4&&m.kpN<=2&&m.body<.35}
+/* résumé compact gardé avec la photo (≈ 40 octets) */
+function aiPack(m){const a={v:27,p:Math.round(m.person*100),f:Math.round(m.face*100),b:Math.round(m.body*100),n:Math.max(1,m.n|0)};
+  if(m.big)a.a=Math.round(m.big*100);if(m.full)a.fb=1;if(m.q!=null)a.q=Math.round(m.q);const o=(m.sport?'s':'')+(m.fete?'v':'');if(o)a.o=o;return a}
+/* albums automatiques à partir du résumé */
+function aiCats(a){if(!a||typeof a!=='object')return[];const c=[];c.push((a.n||1)>=2?'groupe':'solo');
+  if(a.fb)c.push('corps');if((a.n||1)===1&&(a.a||0)>=6)c.push('selfie');if(a.o&&a.o.includes('s'))c.push('sport');if(a.o&&a.o.includes('v'))c.push('fete');return c}
+
+/* =================== v27 : tri IA pro — rapide (cascade turbo), automatique (albums, qualité, anciennes photos), transparent (vue IA, journal, règle en code) =================== */
+Object.assign(ICONS,{
+  cpu:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5v3.5M15 2.5v3.5M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>',
+  scan:'<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M4 12h16"/>',
+  code:'<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><path d="M16 4.6a3.2 3.2 0 0 1 0 6.2M18 14.8c1.6.7 2.7 2.4 3 5.2"/>',
+  person:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5c.8-4 3.6-6.5 7-6.5s6.2 2.5 7 6.5"/>',
+  figure:'<circle cx="12" cy="4.5" r="2"/><path d="M12 7v7M7.5 10.5h9M12 14l-3.2 7M12 14l3.2 7"/>',
+  portrait:'<rect x="5" y="3" width="14" height="18" rx="3"/><circle cx="12" cy="10" r="2.8"/><path d="M8.3 17c.8-1.8 2.1-2.7 3.7-2.7s2.9.9 3.7 2.7"/>',
+  glass:'<path d="M7.5 3h9l-1 6.5a3.5 3.5 0 0 1-7 0z"/><path d="M12 13v7.5M8.5 21h7"/>',
+  ball:'<circle cx="12" cy="12" r="9"/><path d="M12 3c2.6 2.4 3.9 5.4 3.9 9s-1.3 6.6-3.9 9M12 3c-2.6 2.4-3.9 5.4-3.9 9s1.3 6.6 3.9 9M3.5 9.5h17M3.5 14.5h17"/>',
+  look:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 8v3l2 1.5"/>',
+  gauge:'<path d="M4 17a8 8 0 1 1 16 0"/><path d="m12 17 4-5"/>',
+  blur:'<circle cx="12" cy="12" r="8.5" stroke-dasharray="2.4 2.6"/><circle cx="12" cy="12" r="3.2"/>',
+  shot:'<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 5.2h3"/>',
+  turbo:'<path d="M13 2.5 5 13.5h6l-1 8 8-11h-6z"/>',
+  layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'
+});
+Object.assign(DEF,{aiSens:'equilibre',aiBlur:true,aiShots:true,aiTurbo:true});fillDefaults();
+const AI_IC={solo:'person',groupe:'users',corps:'figure',selfie:'portrait',sport:'ball',fete:'glass',verif:'look'};
+AI_CATS.find(c=>c[0]==='selfie')[1]='Portraits';AI_CATS.find(c=>c[0]==='selfie')[2]='Un visage en gros plan, selfies compris';
+const AI_VERIF=['verif','À vérifier','Déjà dans ta galerie, mais l\'IA n\'y voit personne : à garder ou supprimer, c\'est toi qui décides'];
+const AI_WHY={vide:'sans personne',floue:'floue',capture:'capture d\'écran','?':'non analysée'},AI_WHY_S={vide:'0 personne',floue:'floue',capture:'capture'};
+const AI_FR={'wine glass':'verre',bottle:'bouteille',cup:'tasse',cake:'gâteau','sports ball':'ballon',bicycle:'vélo',skis:'skis',snowboard:'snowboard',surfboard:'surf',skateboard:'skate','tennis racket':'raquette','baseball bat':'batte',frisbee:'frisbee',kite:'cerf-volant',dog:'chien',cat:'chat',chair:'chaise','dining table':'table',couch:'canapé',car:'voiture','cell phone':'téléphone',laptop:'ordinateur',tv:'écran',book:'livre',tie:'cravate',horse:'cheval',bed:'lit',boat:'bateau',umbrella:'parapluie',backpack:'sac',handbag:'sac',clock:'horloge','potted plant':'plante',bench:'banc',bird:'oiseau'};
+const AI_F1={face:{enabled:true},body:{enabled:true},object:{enabled:false}},AI_F2={face:{enabled:false},body:{enabled:false},object:{enabled:true}},AI_FA={face:{enabled:true},body:{enabled:true},object:{enabled:true}};
+function aiOpt(){const st=S.settings;return{sens:AI_SENS[st.aiSens]?st.aiSens:'equilibre',blur:st.aiBlur!==false,shots:st.aiShots!==false,turbo:st.aiTurbo!==false}}
+const aiDone=a=>!!a&&typeof a==='object'&&(a.v||0)>=27;
+function aiCatsOf(a){if(!aiDone(a))return[];return a.x?['verif']:aiCats(a)}
+function aiCatDef(k){return k==='verif'?AI_VERIF:AI_CATS.find(c=>c[0]===k)||[k,k,'']}
+async function aiLock(fn){const prev=AI.lock;let rel;AI.lock=new Promise(r=>rel=r);await prev;try{return await fn()}finally{rel()}}
+
+/* --- analyse d'une photo : capture ? → passage rapide (visages + squelette) → objets si utile → décision --- */
+async function aiLook(h,it,o){
+  const bm=await createImageBitmap(it.blob||await impBlob(it.f)),w=bm.width,hh=bm.height;
+  try{if(o.shots&&aiShot(it.f,w,hh))return{shot:true,keep:false,why:'capture',ms:0};
+    const s=Math.min(1,640/Math.max(w,hh)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(hh*s));c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+    const t0=performance.now();let r=await h.detect(c,AI_F1),fast=false;
+    if(o.turbo&&o.sens!=='prudent'&&aiClearNeg(aiMeasure(r,null)))fast=true;
+    else{const r2=await h.detect(c,AI_F2);r={face:r.face,body:r.body,object:r2.object}}
+    const m=aiMeasure(r,fast?null:c),d=fast?{keep:false,why:'vide',rule:null}:aiDecide(m,o);
+    return{...d,m,fast,c,ms:Math.round(performance.now()-t0)}}
+  finally{try{bm.close()}catch(e){}}}
+function aiFree(r){if(r&&r.c){r.c.width=r.c.height=0;r.c=null}}
+
+/* --- tri pendant l'import (remplace la version v26) --- */
+async function aiClassify(ch){const J=IMP,o=aiOpt(),all=()=>new Set(ch.items.map((_,i)=>i));let h;
+  try{h=await aiLoad()}catch(e){J.unsure+=ch.items.length;return all()}
+  J.cats=J.cats||{};J.why=J.why||{};J.log=J.log||[];J.fast=J.fast||0;J.ms=J.ms||0;J.o=o;
+  const keep=new Set();
+  await aiLock(async()=>{if(!J.tA)J.tA=Date.now();
+    for(let i=0;i<ch.items.length;i++){if(J.stop)break;while(J.userPause&&!J.stop)await pSleep(250);const it=ch.items[i];let r=null;
+      try{r=await aiLook(h,it,o)}catch(e){r=null}
+      if(!r){keep.add(i);J.unsure++;aiLog(J,it,{keep:true,why:'?'})}
+      else{if(r.keep){keep.add(i);J.keptLive=(J.keptLive||0)+1;it.ai=aiPack(r.m);for(const k of aiCats(it.ai))J.cats[k]=(J.cats[k]||0)+1}
+        else{it.why=r.why;J.why[r.why]=(J.why[r.why]||0)+1}
+        if(r.fast)J.fast++;J.ms+=r.ms||0;aiLiveSet(J,it,r);aiLog(J,it,r)}
+      aiFree(r);J.aiN=(J.aiN||0)+1;impRender()}});
+  return keep}
+function aiNm(it){return((it.f&&it.f.name)||'photo').replace(/\.[a-z0-9]+$/i,'').slice(0,13)}
+function aiLog(J,it,r){const cats=r.keep&&it.ai?aiCats(it.ai):[];
+  J.log.unshift({nm:aiNm(it),keep:!!r.keep,why:r.why,rule:r.rule,fast:!!r.fast,ms:r.ms||0,p:r.m?Math.round(r.m.person*100):null,f:r.m?Math.round(r.m.face*100):null,cat:cats[0]||''});
+  if(J.log.length>6)J.log.length=6}
+function aiLiveSet(J,it,r){const now=Date.now();if(!r.c||J.min||document.visibilityState!=='visible'||now-(J.liveT||0)<380)return;J.liveT=now;
+  const s=Math.min(1,420/Math.max(r.c.width,r.c.height)),c=document.createElement('canvas');c.width=Math.round(r.c.width*s);c.height=Math.round(r.c.height*s);c.getContext('2d').drawImage(r.c,0,0,c.width,c.height);
+  J.live={src:c.toDataURL('image/jpeg',.72),ar:c.width/c.height,boxes:r.m?r.m.boxes:[],keep:r.keep,why:r.why,fast:r.fast,cats:r.keep&&it.ai?aiCats(it.ai):[],m:r.m,ms:r.ms,n:++J.liveN||(J.liveN=1)};c.width=c.height=0}
+
+/* --- rendu : cadre IA (photo + détections) --- */
+const pct=v=>Math.round((v||0)*100)+' %';
+function aiFrame(src,boxes,ar,W,H,scan){let w=W,h=W/ar;if(h>H){h=H;w=H*ar}w=Math.round(w);h=Math.round(h);
+  const one=(boxes||[]).filter(b=>b.k!=='o').length<=2,bx=(boxes||[]).map(b=>{const[x,y,bw,bh]=b.b,lab=b.k==='o'?(AI_FR[b.l]||b.l)+' ':one?(b.k==='f'?'visage ':'personne '):'';
+    return`<i class="bx ${b.k}" style="left:${(x*100).toFixed(1)}%;top:${(y*100).toFixed(1)}%;width:${(bw*100).toFixed(1)}%;height:${(bh*100).toFixed(1)}%"><em>${esc(lab)}${Math.round(b.s*100)} %</em></i>`}).join('');
+  return`<div class="ai-fr" style="height:${H}px"><div class="ai-im" style="width:${w}px;height:${h}px"><img src="${src}" alt="">${bx}${scan?'<span class="ai-scw"><span class="ai-scan"></span></span>':''}</div></div>`}
+const AI_LEG='<div class="ai-leg"><span><i class="f"></i>visage</span><span><i class="p"></i>personne</span><span><i class="o"></i>objet</span></div>';
+function aiVerdict(L){if(!L)return'';const c=L.cats&&L.cats[0]?aiCatDef(L.cats[0])[1]:'';
+  return L.keep?`<span class="ai-vd ok">${ic('check',13)} Gardée${c?' · '+esc(c):''}</span>`:`<span class="ai-vd no">${ic('x',13)} Écartée · ${esc(AI_WHY[L.why]||L.why)}${L.fast?' · turbo':''}</span>`}
+function aiEngine(J){const o=J.o||aiOpt(),be=AI.be==='webgl'?'GPU':AI.be?'CPU':'…';
+  return`<div class="ai-eng"><span><i class="ai-dot"></i>Moteur ${be}</span><span>3 modèles</span><span>0 envoi</span><span>${esc(AI_SENS[o.sens].nom)}</span>${o.turbo&&o.sens!=='prudent'?`<span class="tb">${ic('turbo',12)} Turbo</span>`:''}</div>`}
+function aiRate(J){const el=(Date.now()-(J.tA||J.t0))/60000;return el>.05?(J.aiN||0)/el:0}
+function aiEta(J,doneN){const r=aiRate(J);if(!r||!J.aiN)return'Calcul du temps restant…';const left=(J.n-doneN)/r;return left<1?'Moins d\'une minute':`≈ ${Math.ceil(left)} min restantes`}
+function aiPipe(J){const st=[['img','Lecture',J.dec],['layers','Doublons',J.dup+J.skip],['scan','Détection',J.aiN||0],['check','Gardées',Math.max(J.kept,J.keptLive||0)],['grid','Albums',Object.values(J.cats||{}).reduce((a,b)=>a+b,0)]];
+  const act=J.state==='done'?-1:J.aiLoading?2:(J.aiN||0)<J.dec-J.dup?2:J.upQ&&J.upQ.length?3:0;
+  return st.map(([i,l,v],k)=>`<div class="${k===act?'act':''}${v?' has':''}"><i>${ic(i,14)}</i><b>${i0(v||0)}</b><span>${l}</span></div>`).join('')}
+function aiCatChips(cats,big){const L=AI_CATS.filter(c=>(cats||{})[c[0]]);if(!L.length)return'';const mx=Math.max(...L.map(c=>cats[c[0]]));
+  return big?L.map(c=>`<div class="ai-br"><span>${ic(AI_IC[c[0]],15)} ${esc(c[1])}</span><i><b style="width:${Math.max(4,cats[c[0]]/mx*100)}%"></b></i><em>${i0(cats[c[0]])}</em></div>`).join('')
+    :L.map(c=>`<span class="ai-cat">${ic(AI_IC[c[0]],13)} ${esc(c[1])} <b>${i0(cats[c[0]])}</b></span>`).join('')}
+function aiLogHtml(J){const L=J.log||[];if(!L.length)return`<div class="ln mute">// en attente de la première photo…</div>`;
+  return L.map(l=>`<div class="ln ${l.keep?'ok':'no'}"><span class="fn">${esc(l.nm)}</span><span class="sc">${l.why==='capture'?'capture':l.fast?'turbo':l.p==null?'—':`p${l.p} v${l.f}`}${l.ms?` · ${l.ms}ms`:''}</span><b>${l.keep?'✓ '+esc(l.cat?aiCatDef(l.cat)[1]:'gardée'):'✗ '+esc(AI_WHY[l.why]||l.why)}</b></div>`).join('')}
+
+/* --- écran du tri en mode IA locale --- */
+function aiBody(){const J=IMP;
+  const head=(t,sub)=>`<i class="orb o1"></i><i class="orb o2"></i><div class="imp-top"><div><div class="hello">${ic('cpu',14)} ${sub}</div><h3>${t}</h3></div><button class="imp-x" data-a="${J.state==='done'?'impClose':'impMin'}" aria-label="${J.state==='done'?'Fermer':'Réduire'}">${ic(J.state==='done'?'x':'minus',18)}</button></div>`;
+  const stats=`<div class="imp-stats"><div class="on"><b id="impK">${J.kept}</b><span>gardées</span></div><div><b id="impR">${J.rej}</b><span>écartées</span></div><div><b id="impD">${J.dup+J.skip}</b><span>doublons</span></div><div><b id="impV">${J.vids}</b><span>vidéos</span></div></div>`;
+  if(J.view==='rej'){const L=J.rejects;
+    return head(`${L.length} photo${L.length>1?'s':''} écartée${L.length>1?'s':''}`,'Écartées par l\'IA')+`<p class="imp-phase" style="text-align:left;font-weight:500;color:var(--hero-muted)">Touche celles que tu veux garder quand même.</p>
+    <div class="imp-rej">${L.map((r,i)=>`<button class="${J.sel.has(i)?'on':''}" data-a="impPick" data-v="${i}" aria-pressed="${J.sel.has(i)}" aria-label="Photo écartée ${i+1}"><img src="${r.thumb}" alt="" loading="lazy"><s class="ai-rz ${esc(r.why||'vide')}">${esc(AI_WHY_S[r.why]||'0 personne')}</s><i>${ic('check',13)}</i></button>`).join('')}</div>
+    <div class="imp-btns"><button class="btn ghost" data-a="impBack">Retour</button><button class="btn go" data-a="impRescue" ${J.sel.size?'':'disabled'}>${ic('check',17)} Garder ${J.sel.size||''}</button></div>`}
+  if(J.state==='done'){const s=Math.round((Date.now()-J.t0)/1000),dur=s<60?`${s} s`:`${Math.round(s/60)} min`,W=J.why||{},rate=aiRate(J);
+    const rows=[['vide','Sans personne',W.vide],['floue','Floues',W.floue],['capture','Captures d\'écran',W.capture],['dup','Doublons ou déjà vues',J.dup+J.skip],['vid','Vidéos',J.vids]].filter(r=>r[2]);
+    return head(J.kept?`${i0(J.kept)} photo${J.kept>1?'s':''} rangée${J.kept>1?'s':''}`:'Aucune photo gardée','Tri IA terminé')+`
+    <div class="ai-sum"><div><b>${i0(J.aiN||0)}</b><span>analysées</span></div><div><b>${dur}</b><span>durée</span></div><div><b>${rate?Math.round(rate):'—'}</b><span>photos / min</span></div>${J.fast?`<div><b>${i0(J.fast)}</b><span>en turbo</span></div>`:''}</div>
+    ${J.kept&&Object.keys(J.cats||{}).length?`<div class="ai-blk"><h4>${ic('grid',14)} Rangées dans tes albums IA</h4>${aiCatChips(J.cats,true)}</div>`:''}
+    ${rows.length?`<div class="ai-blk"><h4>${ic('x',14)} Écartées automatiquement</h4><div class="ai-why">${rows.map(r=>`<span>${esc(r[1])} <b>${i0(r[2])}</b></span>`).join('')}</div></div>`:''}
+    ${J.err==='quota'?`<div class="imp-note warn">Le stockage de l'appli est plein. Supprime des photos dont tu ne veux plus pour en ajouter d'autres.</div>`:''}
+    ${J.full?`<div class="imp-note warn">Limite de ${i0(MAXP)} photos atteinte.</div>`:''}
+    ${J.fail+J.ufail?`<div class="imp-note">${J.fail+J.ufail} photo${J.fail+J.ufail>1?'s':''} non enregistrée${J.fail+J.ufail>1?'s':''} (format illisible). Rechoisis le même lot plus tard : seules celles-là seront refaites.</div>`:''}
+    ${J.unsure?`<div class="imp-note">${J.unsure} photo${J.unsure>1?'s':''} gardée${J.unsure>1?'s':''} sans vérification : l'IA n'a pas pu les analyser.</div>`:''}
+    ${J.sess?`<div class="imp-note warn">${J.sess} photo${J.sess>1?'s':''} gardée${J.sess>1?'s':''} pour cette session seulement : le stockage de l'appli n'a pas répondu.</div>`:''}
+    <div class="imp-strip" id="impStrip"></div>
+    <div class="imp-btns">${J.rejects.length?`<button class="btn ghost" data-a="impRej">Écartées (${J.rejects.length})</button>`:''}<button class="btn go" data-a="impMore">${ic('plus',17)} Lot suivant</button></div>
+    <div class="imp-btns" style="margin-top:8px">${J.kept?`<button class="btn ghost" data-a="aiAlbums">${ic('grid',16)} Albums IA</button>`:''}<button class="btn ghost" data-a="impClose">Fermer</button></div>`}
+  return head(J.aiLoading?'Démarrage du moteur IA':'Analyse IA de tes photos','Tri IA · sur ton iPhone')+aiEngine(J)+`
+    <div class="ai-live" id="aiLive">${J.aiLoading?`<div class="ai-boot"><span class="ai-spin"></span><b>Chargement des 3 modèles</b><small>11 Mo au premier tri, ensuite c'est instantané</small></div>`:''}</div>
+    <div class="ai-prog"><div class="ai-bar"><i id="aiBar"></i></div><div class="ai-pl"><b id="impPct">0%</b><span id="impSub">0 / ${J.n} analysées</span><span id="aiEta"></span></div></div>
+    <div class="ai-pipe" id="aiPipe">${aiPipe(J)}</div>
+    ${stats}<div class="ai-cats" id="aiCats"></div>
+    <div class="ai-log" id="aiLog" aria-live="off"><div class="ai-log-h">${ic('code',13)} journal de l'IA</div><div id="aiLogL">${aiLogHtml(J)}</div></div>
+    <div class="imp-btns"><button class="btn ghost" data-a="impPauseT">${J.userPause?ic('play',16)+' Reprendre':'❚❚ Pause'}</button><button class="btn ghost" data-a="impStop">${ic('x',16)} Arrêter</button></div>`}
+function aiPaint(){const J=IMP,card=$('#impCard');if(!J||J.mode!=='local'||!card||J.view==='rej')return;
+  const doneN=Math.min(J.n,Math.max(J.cls,J.aiN||0)+J.dup+J.fail+(J.rej-J.rejects.length)),p=J.state==='done'?1:J.n?doneN/J.n:0;
+  const set=(id,v)=>{const x=card.querySelector('#'+id);if(x&&x.textContent!==String(v))x.textContent=v};
+  if(J.state!=='done'){set('impK',Math.max(J.kept,J.keptLive||0));set('impR',Math.max(J.rej,Object.values(J.why||{}).reduce((a,b)=>a+b,0)+(J.rej-J.rejects.length)))}
+  const bar=card.querySelector('#aiBar');if(bar)bar.style.width=(p*100).toFixed(1)+'%';
+  const eta=card.querySelector('#aiEta');if(eta){const r=aiRate(J);eta.textContent=J.state==='done'?'':J.userPause?'En pause':J.aiLoading?'':`${r?Math.round(r)+' photos/min · ':''}${aiEta(J,doneN)}`}
+  const pipe=card.querySelector('#aiPipe');if(pipe)pipe.innerHTML=aiPipe(J);
+  const cats=card.querySelector('#aiCats');if(cats){const h=aiCatChips(J.cats);if(cats.dataset.h!==h){cats.dataset.h=h;cats.innerHTML=h}}
+  const lg=card.querySelector('#aiLogL');if(lg&&J.log&&lg.dataset.n!==String(J.aiN)){lg.dataset.n=J.aiN;lg.innerHTML=aiLogHtml(J)}
+  const lv=card.querySelector('#aiLive'),L=J.live;
+  if(lv&&L&&lv.dataset.n!==String(L.n)){lv.dataset.n=L.n;const W=Math.max(200,lv.clientWidth||320);
+    lv.innerHTML=aiFrame(L.src,L.boxes,L.ar,W,196,J.state!=='done')+`<div class="ai-rd">${aiVerdict(L)}<span class="ai-mx">${L.m?`personne <b>${pct(L.m.person)}</b> · visage <b>${pct(L.m.face)}</b>${L.m.q!=null?` · netteté <b>${Math.round(L.m.q)}</b>`:''}`:'capture d\'écran'}${L.ms?` · ${L.ms} ms`:''}</span></div>`}}
+{const _ib=impBody;impBody=function(){const J=IMP;return J&&J.mode==='local'?aiBody():_ib()}}
+{const _ip=impPaint;impPaint=function(full){_ip(full);try{aiPaint()}catch(e){}}}
+{const _ph=impPhase;impPhase=function(n){const J=IMP;if(J&&J.mode==='local'&&!J.aiLoading)return'';return _ph(n)}}
+
+/* --- carte d'import (version GitHub) --- */
+function aiHub(){const on=S.settings.impPeople!==false,o=aiOpt(),n=allPhotos().length,m=imem();
+  const steps=[[o.shots,'shot','Captures'],[true,'layers','Doublons'],[on,'scan','Personnes'],[on&&o.blur,'blur','Netteté'],[on,'grid','Albums']].filter(s=>s[0]);
+  return`<section class="imp-hub ai-hub">${ORBS}<div class="hello">${ic('cpu',14)} Tri IA · sans clé · sur ton iPhone</div><h3>${on?'Importe ta galerie, l\'IA range tout':'Import de ta galerie, sans tri'}</h3>
+    <p>${on?`Jusqu'à 2 500 photos d'un coup. Ton iPhone analyse chaque photo lui-même, sans rien envoyer : il garde celles où il y a des personnes et les range dans tes albums IA.`:`Toutes les photos sont gardées, sauf les vidéos${o.shots?', les captures d\'écran':''} et les doublons. Réactive « Seulement les photos avec des personnes » dans Tri IA automatique, plus bas.`}</p>
+    <ol class="ai-steps">${steps.map(([,i,l],k)=>`<li>${ic(i,13)}<span>${l}</span></li>${k<steps.length-1?'<li class="ar" aria-hidden="true">›</li>':''}`).join('')}</ol>
+    <label class="btn block filebtn go" for="pickPhotos">${ic('plus',18)} Choisir mes photos</label>
+    <div class="ways"><span>${ic('img',13)} ${i0(n)} / ${i0(MAXP)} photos</span>${m.sig.size?`<span>${ic('check',13)} ${i0(m.sig.size)} déjà triées</span><button class="tlink" style="color:var(--hero-muted)" data-a="impForget">Tout réanalyser</button>`:''}</div></section>`}
+{const _ih=impHub;impHub=function(){const J=IMP;if(!window.RP_STANDALONE||(J&&J.state!=='done'))return _ih();return aiHub()}}
+
+/* --- la règle, écrite en code (générée à partir des réglages actifs) --- */
+function aiCode(){const o=aiOpt(),T=AI_SENS[o.sens],on=S.settings.impPeople!==false,f=v=>`<i class="n">${v.toFixed(2)}</i>`,k=t=>`<i class="k">${t}</i>`,fn=t=>`<i class="f">${t}</i>`,s=t=>`<i class="s">"${t}"</i>`,c=t=>`<i class="c">// ${t}</i>`;
+  const L=[c(`Tri IA · ${T.nom} · sur ton iPhone`),c('BlazeFace + MoveNet + CenterNet'),`${k('const')} vu = ${fn('detecter')}(photo);`,''];
+  if(o.shots)L.push(`${k('if')} (${fn('capture')}(photo)) ${fn('ecarter')}(${s('capture')});`);
+  L.push(`${k('if')} (${fn('doublon')}(photo)) ${fn('ecarter')}(${s('doublon')});`);
+  if(!on){L.push('',`${fn('garder')}(photo);`,c('tri des personnes désactivé'));return L.join('\n')}
+  L.push('',`${k('const')} personne =`,`     vu.personne >= ${f(T.p)}`,`  || (vu.personne >= ${f(T.pf[0])} && vu.visage >= ${f(T.pf[1])})`,`  || (vu.visage >= ${f(T.fb[0])} && vu.corps >= ${f(T.fb[1])})`,`  || (vu.points >= <i class="n">${T.sk[0]}</i> && vu.visage >= ${f(T.sk[1])})`,`  || (vu.visages >= <i class="n">${T.g[0]}</i> && vu.personne >= ${f(T.g[1])});`,'',
+    `${k('if')} (!personne) ${fn('ecarter')}(${s('vide')});`);
+  if(o.blur)L.push(`${k('if')} (vu.nettete < <i class="n">${T.q}</i>) ${fn('ecarter')}(${s('floue')});`);
+  L.push('',`${fn('garder')}(photo, ${fn('albums')}(vu));`,c('→ Toi seul, Entre proches, Corps entier…'));
+  if(o.turbo&&o.sens!=='prudent')L.push('',c('Turbo : si visages + squelette ne'),c('voient clairement personne, on saute'),c('CenterNet, le modèle le plus lourd.'));
+  return L.join('\n')}
+
+/* --- onglet Photos : albums IA + automatisation --- */
+function aiCounts(){const out={},all=allPhotos();let done=0,todo=0;
+  for(const p of all){if(p.k==='s')continue;const a=pmeta(PK(p)).ai;if(aiDone(a)){done++;for(const k of aiCatsOf(a))out[k]=(out[k]||0)+1}else todo++}
+  return{out,done,todo,total:done+todo}}
+function aiListOf(k){return sortByDate(allPhotos().filter(p=>p.k!=='s'&&aiCatsOf(pmeta(PK(p)).ai).includes(k)))}
+function aiAlbumsBody(f){const C=aiCounts();
+  if(f==='ai'){const cats=[...AI_CATS,AI_VERIF].filter(c=>C.out[c[0]]);
+    return`<h2><span class="h-left">${ic('grid',18)} Albums IA</span><span class="badge lime">auto</span></h2>
+      ${cats.length?`<div class="ai-albums">${cats.map(c=>{const L=aiListOf(c[0]),cv=L[0];return`<button class="ai-alb${c[0]==='verif'?' vf':''}" data-a="phFilter" data-v="ai:${c[0]}">${cv?`<img data-lz="${esc(PK(cv))}" alt="">`:''}<span><b>${esc(c[1])}</b><em>${i0(C.out[c[0]])} ${plural(C.out[c[0]],'photo')}</em></span><i>${ic(AI_IC[c[0]],15)}</i></button>`}).join('')}</div>`
+        :`<div class="empty">Aucun album pour l'instant. ${C.todo?`Touche « Analyser » dans Tri IA automatique, juste en dessous : l'IA range aussi tes ${i0(C.todo)} photos déjà importées.`:'Importe tes photos : l\'IA les range ici toute seule.'}</div>`}
+      ${C.todo&&C.done?`<p class="hint" style="margin:10px 0 0">${i0(C.todo)} ${plural(C.todo,'photo')} pas encore ${C.todo>1?'analysées':'analysée'} : lance l'analyse plus bas pour les ranger aussi.</p>`:''}`}
+  const k=f.slice(3),d=aiCatDef(k),L=aiListOf(k),lim=S.phMore||60;
+  return`<div class="ai-ah"><button class="chip" data-a="phFilter" data-v="ai">${ic('left',14)} Albums IA</button></div>
+    <h2><span class="h-left">${ic(AI_IC[k]||'grid',18)} ${esc(d[1])}</span><span class="badge">${i0(L.length)}</span></h2><p class="hint" style="margin:0 0 12px">${esc(d[2])}</p>
+    ${L.length?`<div class="ph-grid">${L.slice(0,lim).map(tile).join('')}</div>${L.length>lim?`<button class="btn ghost block" data-a="phMore" style="margin-top:10px">Voir plus (${L.length-lim})</button>`:''}`:'<div class="empty">Plus aucune photo ici.</div>'}`}
+const AIJ={run:false,n:0,done:0,stop:false};
+function aiJobHtml(C){if(AIJ.run){const p=AIJ.n?AIJ.done/AIJ.n:0,el=(Date.now()-AIJ.t0)/60000,r=el>.05?AIJ.done/el:0,left=r?(AIJ.n-AIJ.done)/r:null;
+    return`<div class="ai-job on"><div class="ai-jl"><b>${ic('scan',15)} Analyse en cours · ${i0(AIJ.done)} / ${i0(AIJ.n)}</b><span>${r?Math.round(r)+' photos/min · ':''}${left==null?'calcul…':left<1?'moins d\'une minute':'≈ '+Math.ceil(left)+' min'}</span></div><div class="ai-bar lt"><i style="width:${(p*100).toFixed(1)}%"></i></div><button class="btn ghost sm" data-a="aiJobStop">Arrêter</button></div>`}
+  if(C.todo)return`<div class="ai-job"><div class="ai-jl"><b>${i0(C.todo)} ${plural(C.todo,'photo')} déjà dans ta galerie ${C.todo>1?'ne sont':'n\'est'} pas encore ${C.todo>1?'rangées':'rangée'}</b><span>L'IA les analyse une par une et les range dans tes albums. Elle ne supprime rien : celles où elle ne voit personne vont dans « À vérifier ».</span></div><button class="btn block go" data-a="aiJob">${ic('scan',16)} Analyser ${C.todo>1?'les '+i0(C.todo)+' photos':'la photo'}</button></div>`;
+  return C.total?`<div class="ai-job ok">${ic('check',15)} Toutes tes photos sont analysées et rangées.</div>`:''}
+function aiSw(k,on,t,d,ico){return`<button class="ai-rule" role="switch" aria-checked="${on}" data-a="aiRule" data-v="${k}"><i class="ri">${ic(ico,16)}</i><span><b>${t}</b><em>${d}</em></span><i class="ai-sw${on?' on':''}"></i></button>`}
+function aiAutoCard(){const C=aiCounts(),o=aiOpt(),on=S.settings.impPeople!==false,q=S.settings.quitStart;
+  return`<section class="card ai-card"><h2><span class="h-left">${ic('cpu',18)} Tri IA automatique</span><span class="badge lime">sans clé</span></h2>
+    <p class="hint" style="margin:0 0 12px">3 modèles d'IA tournent sur ton iPhone : <b>BlazeFace</b> (visages), <b>MoveNet</b> (squelette, 17 points) et <b>CenterNet</b> (80 types d'objets). Aucune photo ne quitte ton téléphone.</p>
+    <div class="ai-cov" id="aiCov"><div><b>${i0(C.done)}</b><span>/ ${i0(C.total)} analysées</span></div><div class="ai-bar lt"><i style="width:${C.total?(C.done/C.total*100).toFixed(1):0}%"></i></div></div>
+    <div id="aiJob">${aiJobHtml(C)}</div>
+    <h4 class="ai-h4">Règles d'automatisation</h4>
+    <div class="ai-rules">
+      ${aiSw('impPeople',on,'Garder seulement les photos avec des personnes','Toi et tes proches : paysages, objets et documents sont écartés.','person')}
+      ${aiSw('aiShots',o.shots,'Écarter les captures d\'écran','Repérées à leur format d\'écran de téléphone.','shot')}
+      ${aiSw('aiBlur',o.blur,'Écarter les photos floues','Netteté mesurée sur le visage ou la personne, pas sur le fond.','blur')}
+      ${aiSw('aiTurbo',o.turbo,'Mode turbo','Saute l\'analyse la plus lourde quand il n\'y a clairement personne : jusqu\'à 5× plus rapide sur ces photos.','turbo')}
+      <div class="ai-rule fx"><i class="ri">${ic('shuffle',16)}</i><span><b>Classement Pierre d'avant · qui avance</b><em>${q?`Automatique selon la date de la photo : avant le ${esc(longDate(q))} → Pierre d'avant, après → Pierre qui avance.`:'Automatique dès que ta date d\'arrêt est réglée dans l\'onglet Zéro alcool.'}</em></span>${q?ic('check',16):''}</div>
+    </div>
+    <h4 class="ai-h4">Sensibilité de détection</h4>
+    <div class="seg ai-seg">${Object.entries(AI_SENS).map(([k,v])=>`<button class="${o.sens===k?'on':''}" data-a="aiSens" data-v="${k}">${v.nom}</button>`).join('')}</div>
+    <p class="hint" style="margin:6px 0 0">${esc(AI_SENS[o.sens].nom)} : ${esc(AI_SENS[o.sens].d)}.</p>
+    <details class="ai-code"><summary>${ic('code',15)} Voir la règle en code</summary><pre>${aiCode()}</pre><p class="hint" style="margin:8px 0 0">Ce code suit tes réglages en direct. Les scores vont de 0 à 1 : 0,94 veut dire que l'IA est sûre à 94 %. <b>points</b> = points du squelette repérés (sur 17), <b>corps</b> = silhouette.</p></details></section>`}
+{const _vp=vPhotos;vPhotos=function(){const f=S.phf||'',SA=!!window.RP_STANDALONE,isAi=f==='ai'||f.startsWith('ai:');
+  if(isAi&&!SA&&!aiCounts().done)S.phf=null;
+  let html=_vp();const C=SA||isAi?null:aiCounts();
+  if(SA||(C&&C.done))html=html.replace('<div class="scrollx">',`<div class="scrollx"><button class="chip ai-chip ${isAi?'on':''}" data-a="phFilter" data-v="ai">${ic('cpu',14)} Albums IA</button>`);
+  if(isAi&&(SA||aiCounts().done)){const e=html.indexOf('<section class="card dg-card">'),b=html.lastIndexOf('<section class="card">',e);if(e>0&&b>0)html=html.slice(0,b)+`<section class="card">${aiAlbumsBody(f)}</section>`+html.slice(e)}
+  if(SA)html=html.replace('<section class="card dg-card">',aiAutoCard()+'<section class="card dg-card">');
+  return html}}
+
+/* --- analyse des photos déjà importées --- */
+async function aiPhotoBlob(p){if(p.k==='i'){const b=await IDB.get(p.id);if(b)return b}const u=await photoSrc(p);if(!u)return null;const r=await fetch(u);return r.ok?await r.blob():null}
+function aiStoreMeta(pk,a,dirty){const sh=S.plibIdx&&S.plibIdx.get(pk);
+  if(sh){const it=S.plib[sh].items,id=pk.slice(2);it[id]={...(it[id]||{}),ai:a};dirty.add(sh)}
+  else{const all=S.settings.pmeta||(S.settings.pmeta={});all[pk]={...(all[pk]||{}),ai:a};dirty.add('settings')}}
+function aiFlush(dirty){for(const d of dirty){try{d==='settings'?save('settings'):plibSave(d)}catch(e){}}dirty.clear()}
+function aiJobPaint(){const el=$('#aiJob');if(!el)return;const C=aiCounts();el.innerHTML=aiJobHtml(C);const cv=$('#aiCov');if(cv){const d=Math.min(C.total,C.done+(AIJ.run?AIJ.done%10:0));cv.querySelector('b').textContent=i0(d);cv.querySelector('.ai-bar i').style.width=(C.total?d/C.total*100:0).toFixed(1)+'%'}}
+async function aiJobRun(){if(AIJ.run)return;if(uploading||(IMP&&IMP.state!=='done')){toast('Attends la fin de l\'import en cours.');return}
+  const list=allPhotos().filter(p=>p.k!=='s'&&!aiDone(pmeta(PK(p)).ai));if(!list.length){toast('Toutes tes photos sont déjà analysées.');return}
+  Object.assign(AIJ,{run:true,n:list.length,done:0,t0:Date.now(),stop:false,x:0});aiJobPaint();wake(true);
+  let h;try{h=await aiLoad()}catch(e){AIJ.run=false;wake(false);aiJobPaint();toast('Le moteur IA n\'a pas pu démarrer sur cet appareil.');return}
+  const o={...aiOpt(),turbo:false,shots:false,blur:false},dirty=new Set();let fails=0;AIJ.t0=Date.now();
+  for(const p of list){if(AIJ.stop)break;const pk=PK(p);
+    try{const blob=await aiPhotoBlob(p);if(!blob)throw 0;const r=await aiLock(()=>aiLook(h,{blob,f:null},o));
+      if(r&&r.m){const a=aiPack(r.m);if(!r.keep){a.x=1;AIJ.x++}aiStoreMeta(pk,a,dirty)}aiFree(r)}catch(e){fails++}
+    AIJ.done++;if(AIJ.done%10===0)aiFlush(dirty);aiJobPaint();await pSleep(0)}
+  aiFlush(dirty);AIJ.run=false;wake(false);if(S.tab==='photos')render();
+  toast(AIJ.stop?`Analyse arrêtée : ${i0(AIJ.done)} photos rangées.`:`${i0(AIJ.done-fails)} photos rangées dans tes albums IA${AIJ.x?` · ${AIJ.x} à vérifier`:''}.`)}
+
+/* --- fiche photo : ce que l'IA a vu --- */
+function aiSheetStats(a){if(a===1)return`<p class="hint" style="margin:0">Gardée par le tri IA lors de l'import. Touche le bouton pour voir le détail et la ranger dans les albums.</p>`;
+  if(!aiDone(a))return`<p class="hint" style="margin:0">Pas encore analysée.</p>`;
+  const cats=aiCatsOf(a),bar=(l,v,t)=>`<div class="ai-br sm"><span>${l}</span><i><b style="width:${Math.max(2,Math.min(100,v))}%"></b></i><em>${t}</em></div>`;
+  return`<div class="ai-tags">${cats.map(k=>`<span class="ai-cat lt">${ic(AI_IC[k],13)} ${esc(aiCatDef(k)[1])}</span>`).join('')}${(a.n||1)>1?`<span class="ai-cat lt">${ic('users',13)} ${a.n} personnes</span>`:''}</div>
+    ${bar('Personne',a.p,a.p+' %')}${bar('Visage',a.f,a.f+' %')}${bar('Silhouette',a.b,a.b+' %')}${a.q!=null?bar('Netteté',Math.min(100,a.q*2.5),a.q<5?'floue':a.q<12?'correcte':'bonne'):''}`}
+{const _vs=vPhotoSheet;vPhotoSheet=function(pk){let h=_vs(pk);if(!h||!window.RP_STANDALONE)return h;const a=pmeta(pk).ai;
+  const blk=`<div class="ai-sheet"><div class="ai-sh-h"><b>${ic('cpu',15)} Analyse IA</b><button class="chip" data-a="aiSee">${ic('scan',14)} ${aiDone(a)?'Voir ce que l\'IA voit':'Analyser'}</button></div><div id="aiSee"></div><div id="aiSheetSt">${aiSheetStats(a)}</div></div>`;
+  const i=h.lastIndexOf('<div class="grid2" style="margin-top:12px">');return i>0?h.slice(0,i)+blk+h.slice(i):h+blk}}
+
+Object.assign(ACT,{
+  aiRule(t){const k=t.dataset.v;mutSet(st=>{st[k]=st[k]===false},false);haptic("tap");render()},
+  aiSens(t){mutSet(st=>{st.aiSens=t.dataset.v},false);render()},
+  aiJob(){aiJobRun()},
+  aiJobStop(){AIJ.stop=true;toast('Arrêt après la photo en cours…')},
+  aiAlbums(){ACT.impClose();S.phf='ai';S.phMore=60;render(true)},
+  async aiSee(t){const pk=S.sheet&&S.sheet.pk,p=pk&&photoByKey(pk);if(!p||t.disabled)return;t.disabled=true;const lab=t.innerHTML;t.innerHTML=`<span class="ai-spin sm"></span> Analyse…`;
+    try{const h=await aiLoad(),blob=await aiPhotoBlob(p);if(!blob)throw 0;const r=await aiLock(()=>aiLook(h,{blob,f:null},{...aiOpt(),turbo:false,shots:false,blur:false}));
+      const box=$('#aiSee');if(box&&r.c){const W=Math.max(220,box.clientWidth||320);box.innerHTML=aiFrame(r.c.toDataURL('image/jpeg',.8),r.m.boxes,r.c.width/r.c.height,W,300,false)+(r.m.boxes.length?AI_LEG:'')+`<p class="hint" style="margin:6px 0 10px">${r.m.boxes.length?'Chaque cadre montre ce que l\'IA a repéré, avec son niveau de confiance.':'L\'IA ne repère ni visage ni personne sur cette photo.'} Analyse en ${r.ms} ms.</p>`}
+      const a=aiPack(r.m);if(!r.keep)a.x=1;const dirty=new Set();aiStoreMeta(pk,a,dirty);aiFlush(dirty);aiFree(r);const st=$('#aiSheetSt');if(st)st.innerHTML=aiSheetStats(a);t.innerHTML=`${ic('repeat',14)} Relancer`}
+    catch(e){t.innerHTML=lab;toast('L\'analyse n\'a pas pu se faire sur cet appareil.')}t.disabled=false}
+});
 
 /* ---------- boot ---------- */
 $('#btn-settings').innerHTML=ic('cog',18);$('#btn-prev').innerHTML=ic('left',18);$('#btn-next').innerHTML=ic('right',18);
