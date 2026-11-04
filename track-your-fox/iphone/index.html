@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fox</title>
+<meta name="apple-mobile-web-app-title" content="Fox">
+<meta name="description" content="Installe TRACK YOUR FOX sur l'écran d'accueil de ton iPhone.">
+<meta name="theme-color" content="#0E141A">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@500;700;800&display=swap">
+<script>
+  /* Lancé depuis l'écran d'accueil : on ouvre directement l'app sur claude.ai */
+  var FOX_URL = "https://claude.ai/artifact/YJDtnyi6rp4uYNSMu1CLJU";
+  if (/[?&]ouvrir\b/.test(location.search) || navigator.standalone) { document.documentElement.className = "go"; location.replace(FOX_URL); }
+</script>
+<style>
+/* Layout: one centred column — icon, title, three animated steps, then the open button; a bouncing arrow points at Safari's toolbar */
+:root{
+  --bg:#0E141A; --surface:#161F28; --surface-2:#1D2832; --ink:#E9EEF2; --muted:#8F9DAA; --line:#26333F;
+  --fox:#FF7638; --fox-2:#FFA14A; --fox-ink:#1A0B03; --good:#3FC07F;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif; --body:"Manrope",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding:calc(28px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(120px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));overflow-x:hidden}
+.go body>*{display:none}
+.go body::after{content:"Ouverture de Fox…";position:fixed;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:18px;color:var(--fox)}
+.glow{position:fixed;width:80vmax;height:80vmax;border-radius:50%;background:var(--fox);filter:blur(110px);opacity:.14;top:-45vmax;right:-35vmax;pointer-events:none;animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-12vmax,14vmax) scale(1.1)}}
+main{max-width:440px;margin:0 auto;position:relative;display:grid;gap:22px;justify-items:center;text-align:center}
+.icon{width:112px;height:112px;border-radius:26px;box-shadow:0 22px 50px -18px var(--fox);animation:pop .8s cubic-bezier(.2,.9,.25,1.25) both,bob 3.4s 1s ease-in-out infinite}
+@keyframes pop{from{transform:scale(.4) rotate(-12deg);opacity:0}}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,7vw,30px);line-height:1.12;margin:0;text-wrap:balance;animation:up .6s .15s both}
+h1 em{font-style:normal;background:linear-gradient(120deg,var(--fox),var(--fox-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin:-8px 0 0;color:var(--muted);max-width:34ch;animation:up .6s .25s both}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+.warn{background:rgba(255,118,56,.12);border:1px solid rgba(255,118,56,.4);color:var(--ink);border-radius:16px;padding:14px 16px;font-size:14.5px;text-align:left;width:100%}
+.warn b{color:var(--fox)}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:12px;width:100%;text-align:left}
+li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;animation:up .6s both}
+li:nth-child(1){animation-delay:.35s}li:nth-child(2){animation-delay:.5s}li:nth-child(3){animation-delay:.65s}li:nth-child(4){animation-delay:.8s}
+li .n{width:44px;height:44px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;color:var(--fox)}
+li .n svg{width:24px;height:24px}
+li b{display:block;font-size:15.5px}
+li span{font-size:13.5px;color:var(--muted)}
+li.on{border-color:var(--fox);box-shadow:0 0 0 4px rgba(255,118,56,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 18px;border-radius:16px;font-weight:800;font-size:16px;text-decoration:none;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--fox),var(--fox-2));color:var(--fox-ink);box-shadow:0 14px 30px -14px var(--fox);transition:transform .2s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.note{font-size:13px;color:var(--muted);margin:0}
+.qr{display:grid;gap:12px;justify-items:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;width:100%}
+.qr #qr{background:#fff;padding:12px;border-radius:14px;line-height:0}
+.qr #qr img,.qr #qr canvas{width:180px;height:180px}
+.arrow{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:grid;justify-items:center;gap:4px;color:var(--fox);font-weight:800;font-size:13px;pointer-events:none;animation:nudge 1.3s ease-in-out infinite}
+.arrow svg{width:34px;height:34px}
+@keyframes nudge{50%{transform:translate(-50%,10px)}}
+:focus-visible{outline:2px solid var(--fox);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<main>
+  <img class="icon" src="../icons/apple-touch-icon.png" alt="Icône Fox">
+  <h1>Mets <em>Fox</em> sur ton écran d'accueil</h1>
+  <p class="lead">Une icône, un toucher, et ton suivi nutritionnel s'ouvre directement, analysé par Claude avec ton compte.</p>
+
+  <div class="warn" id="notSafari" hidden>Tu n'es pas dans <b>Safari</b>. Copie ce lien et ouvre-le dans Safari : c'est le seul navigateur de l'iPhone qui peut ajouter une icône à l'écran d'accueil.
+    <button class="btn ghost" id="copy" style="margin-top:10px">Copier le lien</button></div>
+
+  <ol id="steps">
+    <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span>
+      <div><b>Touche «&nbsp;Partager&nbsp;»</b><span>Le carré avec une flèche, en bas de Safari. S'il n'apparaît pas, touche «&nbsp;•••&nbsp;» d'abord.</span></div></li>
+    <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span>
+      <div><b>Choisis «&nbsp;Sur l'écran d'accueil&nbsp;»</b><span>Fais défiler la liste vers le bas si besoin («&nbsp;Afficher plus&nbsp;»).</span></div></li>
+    <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/><circle cx="8" cy="12" r="3" fill="currentColor"/></svg></span>
+      <div><b>Désactive «&nbsp;Ouvrir comme app web&nbsp;»</b><span>Si cette option s'affiche, coupe-la : Fox s'ouvrira dans Safari, où tu es déjà connecté à Claude.</span></div></li>
+    <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <div><b>Touche «&nbsp;Ajouter&nbsp;»</b><span>L'icône Fox apparaît. Touche-la : l'app s'ouvre directement.</span></div></li>
+  </ol>
+
+  <div class="qr" id="desktop" hidden>
+    <b>Tu es sur ordinateur ?</b>
+    <div id="qr" aria-label="QR code du lien d'installation"></div>
+    <p class="note">Scanne ce code avec l'appareil photo de ton iPhone, puis suis les étapes dans Safari.</p>
+  </div>
+
+  <a class="btn" id="open" href="https://claude.ai/artifact/YJDtnyi6rp4uYNSMu1CLJU">Ouvrir Fox maintenant</a>
+  <p class="note">Il faut être connecté à claude.ai. Les analyses utilisent ton compte Claude, sans clé ni frais en plus.</p>
+</main>
+<div class="arrow" id="arrow" hidden aria-hidden="true"><span>Partager</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function () {
+  if (document.documentElement.className === "go") return;
+  var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\/|Snapchat|WhatsApp/.test(ua);
+  var installUrl = location.origin + location.pathname;
+  // L'icône ajoutée à l'écran d'accueil reprend l'adresse actuelle : avec «&nbsp;?ouvrir&nbsp;», elle lance l'app directement.
+  try { history.replaceState(null, "", location.pathname + "?ouvrir"); } catch (e) { }
+  if (ios && otherBrowser) document.getElementById("notSafari").hidden = false;
+  if (ios && !otherBrowser) document.getElementById("arrow").hidden = false;
+  if (!ios) {
+    document.getElementById("desktop").hidden = false;
+    try { new QRCode(document.getElementById("qr"), { text: installUrl, width: 360, height: 360, colorDark: "#0E141A", colorLight: "#ffffff" }); } catch (e) { document.getElementById("desktop").hidden = true; }
+  }
+  document.getElementById("copy").addEventListener("click", function () {
+    var b = this;
+    (navigator.clipboard ? navigator.clipboard.writeText(installUrl) : Promise.reject()).then(function () { b.textContent = "Lien copié ✓"; }, function () { b.textContent = installUrl; });
+  });
+  // Met en avant chaque étape à tour de rôle
+  var li = document.querySelectorAll("#steps li"), k = 0;
+  setInterval(function () { li.forEach(function (x, i) { x.classList.toggle("on", i === k); }); k = (k + 1) % li.length; }, 1800);
+  // Protège l'app voisine hébergée sur le même domaine (son service worker a pu enregistrer cette page comme sa page hors ligne)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("../sw.js").catch(function () { });
+    (async function () {
+      try {
+        var ctl = navigator.serviceWorker.controller; if (!ctl || ctl.scriptURL === new URL("../sw.js", location.href).href) return;
+        if (!(await caches.has("rp-shell-v1"))) return;
+        var base = new URL(".", ctl.scriptURL).href, res = await fetch(base, { cache: "no-cache" }); if (!res.ok) return;
+        await (await caches.open("rp-shell-v1")).put(new URL(base).pathname, res);
+      } catch (e) { }
+    })();
+  }
+})();
+</script>
+</body>
+</html>
