@@ -1,5 +1,6 @@
 # TRACK YOUR FOX
 
+
 Une application web pour suivre son alimentation à partir de photos. Elle s'installe sur l'écran d'accueil de l'iPhone. Claude joue le rôle d'un nutritionniste : il identifie les aliments, estime les portions et calcule les calories (±50 kcal), les protéines, les glucides, les lipides, les fibres, 8 vitamines et 6 minéraux.
 
 ## Installer sur iPhone
