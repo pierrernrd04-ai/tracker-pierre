@@ -74,8 +74,10 @@ li.on{border-color:var(--fox);box-shadow:0 0 0 4px rgba(255,118,56,.15)}
   <h1>Mets <em>Fox</em> sur ton écran d'accueil</h1>
   <p class="lead">Une icône, un toucher, et ton suivi nutritionnel s'ouvre directement, analysé par Claude avec ton compte.</p>
 
-  <div class="warn" id="notSafari" hidden>Tu n'es pas dans <b>Safari</b>. Copie ce lien et ouvre-le dans Safari : c'est le seul navigateur de l'iPhone qui peut ajouter une icône à l'écran d'accueil.
-    <button class="btn ghost" id="copy" style="margin-top:10px">Copier le lien</button></div>
+  <div class="warn" id="notSafari" hidden>Tu n'es pas dans <b>Safari</b>, le seul navigateur de l'iPhone qui peut ajouter une icône à l'écran d'accueil. Touche le bouton pour rouvrir cette page dans Safari.
+    <a class="btn" id="toSafari" href="x-safari-https://pierrernrd04-ai.github.io/tracker-pierre/track-your-fox/iphone/" style="margin-top:12px">Ouvrir dans Safari</a>
+    <button class="btn ghost" id="copy" style="margin-top:8px">Copier le lien</button>
+    <span class="note" style="display:block;margin-top:8px">Rien ne se passe ? Copie le lien, ouvre Safari et colle-le dans la barre d'adresse.</span></div>
 
   <ol id="steps">
     <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span>
@@ -87,6 +89,7 @@ li.on{border-color:var(--fox);box-shadow:0 0 0 4px rgba(255,118,56,.15)}
     <li><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
       <div><b>Touche «&nbsp;Ajouter&nbsp;»</b><span>L'icône Fox apparaît. Touche-la : l'app s'ouvre directement.</span></div></li>
   </ol>
+  <p class="note" id="safariHint" hidden>Pas de «&nbsp;Sur l'écran d'accueil&nbsp;» dans le menu&nbsp;? Tu es dans un navigateur intégré à une app&nbsp;: <a href="x-safari-https://pierrernrd04-ai.github.io/tracker-pierre/track-your-fox/iphone/" style="color:var(--fox);font-weight:800">ouvre cette page dans Safari</a>.</p>
 
   <div class="qr" id="desktop" hidden>
     <b>Tu es sur ordinateur ?</b>
@@ -105,12 +108,18 @@ li.on{border-color:var(--fox);box-shadow:0 0 0 4px rgba(255,118,56,.15)}
 (function () {
   if (document.documentElement.className === "go") return;
   var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  var otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\/|Snapchat|WhatsApp/.test(ua);
+  // Autres navigateurs, ou navigateur intégré à une app (sa signature ne contient pas « Safari/ »)
+  var otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\/|Snapchat|WhatsApp/.test(ua) || (ios && !/Safari\//.test(ua));
   var installUrl = location.origin + location.pathname;
+  // Hors de Safari : on renvoie automatiquement cette page vers Safari (iOS 17 et plus), une seule fois
+  if (ios && otherBrowser) {
+    var tried = false; try { tried = !!sessionStorage.getItem("fox.toSafari"); sessionStorage.setItem("fox.toSafari", "1"); } catch (e) { }
+    if (!tried) setTimeout(function () { location.href = "x-safari-" + installUrl; }, 400);
+  }
   // L'icône ajoutée à l'écran d'accueil reprend l'adresse actuelle : avec «&nbsp;?ouvrir&nbsp;», elle lance l'app directement.
   try { history.replaceState(null, "", location.pathname + "?ouvrir"); } catch (e) { }
   if (ios && otherBrowser) document.getElementById("notSafari").hidden = false;
-  if (ios && !otherBrowser) document.getElementById("arrow").hidden = false;
+  if (ios && !otherBrowser) { document.getElementById("arrow").hidden = false; document.getElementById("safariHint").hidden = false; }
   if (!ios) {
     document.getElementById("desktop").hidden = false;
     try { new QRCode(document.getElementById("qr"), { text: installUrl, width: 360, height: 360, colorDark: "#0E141A", colorLight: "#ffffff" }); } catch (e) { document.getElementById("desktop").hidden = true; }
