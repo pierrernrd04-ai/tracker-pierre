@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fox</title>
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<script>
+  /* Lien de lancement : force l'ouverture de la page d'installation dans Safari (iOS 17 et plus) */
+  var INSTALL = "https://pierrernrd04-ai.github.io/tracker-pierre/track-your-fox/iphone/";
+  var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (IOS) location.href = "x-safari-" + INSTALL; else location.replace(INSTALL);
+</script>
+<style>
+:root{--bg:#0E141A;--surface:#161F28;--ink:#E9EEF2;--muted:#8F9DAA;--line:#26333F;--fox:#FF7638;--fox-2:#FFA14A;--fox-ink:#1A0B03;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:-apple-system,system-ui,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+main{max-width:400px;width:100%;display:grid;gap:18px;justify-items:center;text-align:center}
+img{width:96px;height:96px;border-radius:22px;box-shadow:0 20px 44px -16px var(--fox);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+h1{margin:0;font-size:22px;line-height:1.2}
+p{margin:0;color:var(--muted);font-size:15px;line-height:1.5}
+.btn{display:block;width:100%;padding:15px;border-radius:16px;font-weight:800;font-size:16px;text-decoration:none;text-align:center;border:0;cursor:pointer;font-family:inherit}
+.primary{background:linear-gradient(135deg,var(--fox),var(--fox-2));color:var(--fox-ink)}
+.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+code{display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12.5px;word-break:break-all;color:var(--ink);user-select:all;-webkit-user-select:all}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){img{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <img src="../icons/apple-touch-icon.png" alt="Fox">
+  <h1>Ouverture dans Safari…</h1>
+  <p>Si iOS te demande d'ouvrir la page dans Safari, touche <b>Ouvrir</b>.</p>
+  <a class="btn primary" href="x-safari-https://pierrernrd04-ai.github.io/tracker-pierre/track-your-fox/iphone/">Ouvrir dans Safari</a>
+  <div id="fallback" hidden style="display:grid;gap:10px;width:100%">
+    <p>Toujours pas dans Safari ? Copie ce lien, ouvre Safari et colle-le dans la barre d'adresse :</p>
+    <code id="link">https://pierrernrd04-ai.github.io/tracker-pierre/track-your-fox/iphone/</code>
+    <button class="btn ghost" id="copy">Copier le lien</button>
+  </div>
+</main>
+<script>
+  setTimeout(function () { document.getElementById("fallback").hidden = false; }, 1800);
+  document.getElementById("copy").addEventListener("click", function () {
+    var b = this; (navigator.clipboard ? navigator.clipboard.writeText(INSTALL) : Promise.reject()).then(function () { b.textContent = "Lien copié ✓"; }, function () { b.textContent = "Sélectionne le lien ci-dessus"; });
+  });
+  // Protège l'app voisine du même domaine : son service worker a pu enregistrer cette page comme sa page hors ligne
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("../sw.js").catch(function () { });
+    (async function () { try {
+      var ctl = navigator.serviceWorker.controller; if (!ctl || ctl.scriptURL === new URL("../sw.js", location.href).href) return;
+      if (!(await caches.has("rp-shell-v1"))) return;
+      var base = new URL(".", ctl.scriptURL).href, res = await fetch(base, { cache: "no-cache" }); if (!res.ok) return;
+      await (await caches.open("rp-shell-v1")).put(new URL(base).pathname, res);
+    } catch (e) { } })();
+  }
+</script>
+</body>
+</html>
