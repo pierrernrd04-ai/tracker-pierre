@@ -1,7 +1,6 @@
-/* TRACK YOUR FOX — suivi nutritionnel par photo (PWA autonome) */
-const SDK_URL = "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.137.0/+esm";
-const MODEL = "claude-opus-5-5";
-const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+/* TRACK YOUR FOX — suivi nutritionnel par photo (PWA autonome, IA sur l'appareil, gratuite) */
+const TF_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1";
+const MODEL_ID = "onnx-community/swin-finetuned-food101-ONNX";
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const R = Math.round;
@@ -34,7 +33,7 @@ const paceAt = h => { for (let i = 1; i < PACE.length; i++) { const [h1, v1] = P
 const st = {
   meals: [], realMeals: null, demo: false,
   profile: { name: "", sex: "m", age: 28, weight: 75, height: 178, act: 1.55, goal: "maintain" },
-  settings: { apiKey: "", effort: "high", theme: "auto" },
+  settings: { theme: "auto" }, dl: null, runId: 0,
   view: todayKey(), micro: "vit", histRange: "7", repRange: 7, tab: null,
   photo: null, mealType: null, analysis: null, stream: null
 };
@@ -354,9 +353,9 @@ function setScanNow() { const n = new Date(); $("#mealDate").value = dayKey(n); 
 $("#mealTime").addEventListener("input", e => { e.target.dataset.touched = "1"; const h = Number(e.target.value.split(":")[0]); if (!isNaN(h)) setMealType(autoMealType(h)); });
 $("#mealDate").addEventListener("input", e => { $("#mealTime").dataset.touched = "1"; });
 function scanAt() { const d = $("#mealDate").value || todayKey(), t = $("#mealTime").value || "12:00"; const at = new Date(d + "T" + t + ":00").getTime(); return isNaN(at) ? Date.now() : Math.min(at, Date.now()); }
-const hasKey = () => !!st.settings.apiKey;
+const hasKey = () => true;
 function renderScan() {
-  $("#keyCard").hidden = hasKey();
+  $("#keyCard").hidden = lsGet("modelReady", false);
   if (!$("#mealTime").dataset.touched) setScanNow();
   updateAnalyzeBtn();
 }
@@ -392,73 +391,257 @@ drop.addEventListener("dragleave", () => drop.classList.remove("over"));
 drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); onFile(e.dataTransfer.files[0]); });
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith("image/")); if (f && st.tab === "scan") onFile(f); });
 
-/* --- Claude --- */
-let sdkPromise = null;
-const loadSDK = () => (sdkPromise ||= import(SDK_URL).then(m => m.default).catch(e => { sdkPromise = null; throw e; }));
-async function client() { const Anthropic = await loadSDK(); return { Anthropic, c: new Anthropic({ apiKey: st.settings.apiKey, dangerouslyAllowBrowser: true, maxRetries: 1 }) }; }
-/* Appel en streaming avec repli serveur en cas de refus ; si le compte n'accepte pas le paramètre de repli, on relance sans. */
-async function callClaude(c, A, params, onText, track = true) {
-  const run = async withFallback => {
-    const stream = c.beta.messages.stream(withFallback ? { ...params, betas: [FALLBACK_BETA], fallbacks: "default" } : params);
-    if (track) { st.stream = stream; updateAnalyzeBtn(); }
-    let any = false; stream.on("text", d => { any = true; onText?.(d); });
-    try { return await stream.finalMessage(); }
-    catch (e) { if (withFallback && !any && e instanceof A.BadRequestError && /fallback/i.test(e.message)) return run(false); throw e; }
-    finally { if (track) st.stream = null; }
-  };
-  return run(true);
-}
-
-const NUM = { type: "number" };
-const ANALYSIS_SCHEMA = {
-  type: "object", additionalProperties: false,
-  required: ["food", "reason", "dish", "items", "kcal_low", "kcal_high", "confidence", "score", "tags", "advice"],
-  properties: {
-    food: { type: "boolean" }, reason: { type: "string" }, dish: { type: "string" },
-    items: { type: "array", items: { type: "object", additionalProperties: false,
-      required: ["name", "grams", "kcal", "protein", "carbs", "fat", "fiber", "sugar", "x", "y", "micro"],
-      properties: { name: { type: "string" }, grams: NUM, kcal: NUM, protein: NUM, carbs: NUM, fat: NUM, fiber: NUM, sugar: NUM, x: NUM, y: NUM,
-        micro: { type: "object", additionalProperties: false, required: MICRO_KEYS, properties: Object.fromEntries(MICRO_KEYS.map(k => [k, NUM])) } } } },
-    kcal_low: NUM, kcal_high: NUM, confidence: NUM, score: NUM, tags: { type: "array", items: { type: "string" } }, advice: { type: "string" }
-  }
+/* --- IA locale : reconnaissance du plat sur l'iPhone (gratuit, sans compte, photos jamais envoyées) --- */
+// [id, nom, portion (g), kcal, protéines, glucides, lipides, fibres, sucres (pour 100 g), profil micronutriments]
+const DISHES = [
+  ["apple_pie", "Tarte aux pommes", 125, 265, 2.4, 37, 12.5, 1.6, 16, "patisserie_fruit"],
+  ["baby_back_ribs", "Travers de porc (ribs)", 250, 290, 22, 6, 20, .2, 5, "viande_porc"],
+  ["baklava", "Baklava", 60, 430, 6.7, 37, 29, 2.5, 20, "patisserie_noix"],
+  ["beef_carpaccio", "Carpaccio de bœuf", 120, 160, 21, 1, 8, .2, .5, "viande_boeuf"],
+  ["beef_tartare", "Tartare de bœuf", 180, 190, 20, 2, 11, .3, 1, "viande_boeuf"],
+  ["beet_salad", "Salade de betteraves", 200, 110, 3, 10, 6.5, 2.5, 7, "legumes"],
+  ["beignets", "Beignets", 100, 390, 6, 45, 21, 1.4, 18, "patisserie_frit"],
+  ["bibimbap", "Bibimbap", 450, 130, 6.5, 17, 4, 1.8, 2, "plat_riz"],
+  ["bread_pudding", "Pudding au pain", 150, 220, 5.5, 32, 8, .8, 18, "dessert_lacte"],
+  ["breakfast_burrito", "Burrito petit-déjeuner", 250, 215, 10, 20, 10.5, 2, 1.5, "sandwich"],
+  ["bruschetta", "Bruschetta", 120, 190, 5.5, 25, 7.5, 2, 3, "pain"],
+  ["caesar_salad", "Salade César", 300, 145, 8, 6, 10, 1.5, 1.5, "salade_composee"],
+  ["cannoli", "Cannoli", 90, 360, 8, 36, 21, 1, 20, "patisserie_lait"],
+  ["caprese_salad", "Salade caprese", 220, 160, 9, 4, 12, 1, 3, "salade_fromage"],
+  ["carrot_cake", "Carrot cake", 120, 400, 4.5, 50, 21, 1.5, 33, "patisserie"],
+  ["ceviche", "Ceviche", 200, 95, 14, 6, 1.5, 1, 2.5, "poisson"],
+  ["cheesecake", "Cheesecake", 125, 320, 5.5, 26, 22, .4, 21, "dessert_lacte"],
+  ["cheese_plate", "Plateau de fromages", 100, 370, 23, 2, 30, 0, .5, "fromage"],
+  ["chicken_curry", "Curry de poulet", 350, 135, 11, 6, 7.5, 1.3, 2.5, "plat_poulet_sauce"],
+  ["chicken_quesadilla", "Quesadilla au poulet", 220, 275, 15, 23, 13.5, 1.5, 2, "sandwich"],
+  ["chicken_wings", "Ailes de poulet", 200, 270, 24, 3, 18, 0, .5, "poulet_frit"],
+  ["chocolate_cake", "Gâteau au chocolat", 110, 390, 5, 50, 19, 2.5, 35, "patisserie_choco"],
+  ["chocolate_mousse", "Mousse au chocolat", 100, 280, 5.5, 25, 18, 2, 22, "dessert_choco"],
+  ["churros", "Churros", 100, 410, 5, 45, 23, 1.5, 15, "patisserie_frit"],
+  ["clam_chowder", "Chaudrée de palourdes", 300, 90, 4.5, 8, 4.5, .6, 1.5, "soupe_creme"],
+  ["club_sandwich", "Club sandwich", 250, 245, 13, 20, 12.5, 1.6, 3, "sandwich"],
+  ["crab_cakes", "Galettes de crabe", 150, 220, 14, 12, 13, .6, 1.5, "fruits_mer_frit"],
+  ["creme_brulee", "Crème brûlée", 120, 300, 4.5, 23, 21, 0, 22, "dessert_lacte"],
+  ["croque_madame", "Croque-madame", 220, 270, 15, 18, 15.5, 1, 3, "sandwich"],
+  ["cup_cakes", "Cupcakes", 75, 390, 4, 55, 18, .8, 38, "patisserie"],
+  ["deviled_eggs", "Œufs mimosa", 100, 200, 11, 1.5, 16.5, 0, 1, "oeufs"],
+  ["donuts", "Donuts", 75, 420, 5, 50, 22, 1.5, 22, "patisserie_frit"],
+  ["dumplings", "Raviolis chinois", 200, 200, 9, 25, 7, 1.5, 2, "asiatique"],
+  ["edamame", "Edamame", 150, 120, 11, 9, 5, 5, 2, "legumineuses"],
+  ["eggs_benedict", "Œufs Bénédicte", 250, 230, 11, 13, 15, .6, 1.5, "oeufs"],
+  ["escargots", "Escargots au beurre", 100, 300, 15, 3, 26, .3, .5, "fruits_mer"],
+  ["falafel", "Falafels", 150, 330, 13, 32, 18, 5, 2, "legumineuses"],
+  ["filet_mignon", "Filet mignon", 200, 220, 28, 0, 12, 0, 0, "viande_boeuf"],
+  ["fish_and_chips", "Fish and chips", 350, 230, 11, 22, 11, 1.8, .5, "poisson_frit"],
+  ["foie_gras", "Foie gras", 60, 460, 7, 4.5, 45, 0, 1, "abats"],
+  ["french_fries", "Frites", 150, 310, 3.4, 41, 15, 3.8, .3, "frit"],
+  ["french_onion_soup", "Soupe à l'oignon gratinée", 350, 80, 3.8, 8, 3.5, .8, 3, "soupe_fromage"],
+  ["french_toast", "Pain perdu", 150, 230, 7.5, 27, 10, 1, 10, "petitdej_sucre"],
+  ["fried_calamari", "Calamars frits", 150, 260, 15, 18, 14, .5, .5, "fruits_mer_frit"],
+  ["fried_rice", "Riz cantonais", 300, 170, 6, 24, 5.5, 1, 1, "plat_riz"],
+  ["frozen_yogurt", "Yaourt glacé", 150, 130, 4, 22, 3.5, 0, 20, "dessert_lacte"],
+  ["garlic_bread", "Pain à l'ail", 80, 350, 8, 42, 16, 2, 3, "pain"],
+  ["gnocchi", "Gnocchis en sauce", 300, 160, 4.5, 26, 4.5, 1.8, 2, "pates"],
+  ["greek_salad", "Salade grecque", 250, 110, 4, 5, 9, 1.8, 3, "salade_fromage"],
+  ["grilled_cheese_sandwich", "Sandwich au fromage grillé", 150, 330, 13, 28, 19, 1.5, 3, "sandwich"],
+  ["grilled_salmon", "Saumon grillé", 180, 210, 22, 0, 13.5, 0, 0, "poisson_gras"],
+  ["guacamole", "Guacamole", 100, 155, 2, 8.5, 14, 6, 1, "legumes_gras"],
+  ["gyoza", "Gyozas", 150, 210, 9, 24, 8.5, 1.5, 2, "asiatique"],
+  ["hamburger", "Hamburger", 220, 255, 14, 23, 12, 1.5, 4.5, "burger"],
+  ["hot_and_sour_soup", "Soupe aigre-piquante", 350, 40, 2.6, 4.5, 1.3, .5, 1, "soupe"],
+  ["hot_dog", "Hot-dog", 150, 270, 10, 23, 15, 1, 4, "sandwich"],
+  ["huevos_rancheros", "Huevos rancheros", 300, 150, 7.5, 12, 8, 3, 2, "oeufs"],
+  ["hummus", "Houmous", 100, 240, 8, 14, 17, 6, .3, "legumineuses"],
+  ["ice_cream", "Glace", 100, 210, 3.7, 24, 11, .7, 21, "dessert_lacte"],
+  ["lasagna", "Lasagnes", 350, 150, 8.5, 13, 7, 1.2, 3, "pates_viande"],
+  ["lobster_bisque", "Bisque de homard", 300, 100, 4, 6, 7, .3, 2, "soupe_creme"],
+  ["lobster_roll_sandwich", "Lobster roll", 200, 230, 13, 22, 10, 1, 3, "sandwich_mer"],
+  ["macaroni_and_cheese", "Macaroni au fromage", 300, 165, 7, 18, 7.5, 1, 2, "pates_fromage"],
+  ["macarons", "Macarons", 60, 410, 6, 55, 18, 2, 50, "patisserie_noix"],
+  ["miso_soup", "Soupe miso", 250, 25, 2, 3, .8, .5, .8, "soupe"],
+  ["mussels", "Moules marinières", 400, 95, 11, 4, 3.5, .2, .5, "fruits_mer"],
+  ["nachos", "Nachos garnis", 250, 300, 8, 32, 16, 3.5, 2, "frit"],
+  ["omelette", "Omelette", 180, 155, 11, 1, 12, 0, .6, "oeufs"],
+  ["onion_rings", "Rondelles d'oignon frites", 120, 330, 4.5, 35, 19, 2, 4, "frit"],
+  ["oysters", "Huîtres", 120, 70, 7, 4, 2.5, 0, 0, "fruits_mer"],
+  ["pad_thai", "Pad thaï", 350, 160, 7.5, 21, 5.5, 1.3, 5, "nouilles"],
+  ["paella", "Paella", 400, 150, 9, 18, 4.5, 1, 1, "plat_riz_mer"],
+  ["pancakes", "Pancakes", 150, 230, 6, 30, 9.5, 1, 10, "petitdej_sucre"],
+  ["panna_cotta", "Panna cotta", 120, 230, 3, 20, 15, 0, 19, "dessert_lacte"],
+  ["peking_duck", "Canard laqué", 200, 260, 19, 6, 18, .3, 4, "volaille_gras"],
+  ["pho", "Phở (soupe de nouilles)", 600, 60, 4.5, 7, 1.5, .4, .8, "soupe_nouilles"],
+  ["pizza", "Pizza", 300, 260, 11, 30, 10.5, 2, 3.5, "pizza"],
+  ["pork_chop", "Côte de porc", 200, 230, 27, 0, 13, 0, 0, "viande_porc"],
+  ["poutine", "Poutine", 400, 205, 6, 20, 11.5, 1.8, 1, "frit"],
+  ["prime_rib", "Côte de bœuf", 250, 290, 24, 0, 21, 0, 0, "viande_boeuf"],
+  ["pulled_pork_sandwich", "Sandwich au porc effiloché", 250, 250, 15, 25, 10, 1.3, 9, "sandwich"],
+  ["ramen", "Ramen", 550, 85, 4.5, 10, 3, .6, 1, "soupe_nouilles"],
+  ["ravioli", "Raviolis", 300, 175, 7.5, 22, 6, 1.5, 2.5, "pates_viande"],
+  ["red_velvet_cake", "Red velvet", 120, 370, 4, 48, 18, .7, 35, "patisserie"],
+  ["risotto", "Risotto", 300, 145, 4, 20, 5.5, .6, .8, "plat_riz"],
+  ["samosa", "Samoussas", 120, 260, 5, 28, 14, 2.5, 2, "frit"],
+  ["sashimi", "Sashimi", 150, 140, 22, 0, 5.5, 0, 0, "poisson_gras"],
+  ["scallops", "Saint-Jacques poêlées", 150, 140, 20, 5, 4.5, 0, 0, "fruits_mer"],
+  ["seaweed_salad", "Salade d'algues", 120, 70, 1.5, 9, 3, 2.5, 4, "legumes"],
+  ["shrimp_and_grits", "Crevettes et polenta", 350, 140, 9, 13, 6, .8, 1, "fruits_mer"],
+  ["spaghetti_bolognese", "Spaghetti bolognaise", 350, 150, 7, 19, 5, 1.6, 2.5, "pates_viande"],
+  ["spaghetti_carbonara", "Spaghetti carbonara", 350, 200, 8.5, 22, 9, 1.2, 1, "pates_fromage"],
+  ["spring_rolls", "Nems / rouleaux de printemps", 150, 220, 6.5, 24, 11, 1.5, 2, "asiatique"],
+  ["steak", "Steak", 200, 250, 26, 0, 16, 0, 0, "viande_boeuf"],
+  ["strawberry_shortcake", "Fraisier", 130, 300, 4, 38, 15, 1.2, 25, "patisserie_fruit"],
+  ["sushi", "Sushis", 250, 145, 6, 26, 2, .6, 5, "poisson_riz"],
+  ["tacos", "Tacos", 200, 215, 10, 20, 10.5, 2.5, 2, "sandwich"],
+  ["takoyaki", "Takoyaki", 150, 190, 7, 23, 8, .8, 3, "fruits_mer_frit"],
+  ["tiramisu", "Tiramisu", 120, 290, 5, 28, 17, .6, 20, "dessert_lacte"],
+  ["tuna_tartare", "Tartare de thon", 150, 145, 22, 2, 5.5, .8, .5, "poisson"],
+  ["waffles", "Gaufres", 120, 290, 7, 33, 14, 1.3, 9, "petitdej_sucre"]
+];
+const BASICS = [
+  ["baguette", "Pain (baguette)", 60, 270, 9, 55, 1.3, 2.8, 2.5, "pain"],
+  ["pain_complet", "Pain complet", 60, 250, 9, 45, 3, 7, 3, "pain"],
+  ["croissant", "Croissant", 60, 420, 8, 46, 22, 2.5, 10, "patisserie"],
+  ["cereales", "Céréales du petit-déjeuner", 40, 380, 8, 78, 3, 4, 25, "cereales"],
+  ["avoine", "Flocons d'avoine", 50, 370, 13, 60, 7, 10, 1, "cereales_completes"],
+  ["riz", "Riz blanc cuit", 180, 130, 2.7, 28, .3, .4, .1, "plat_riz"],
+  ["pates", "Pâtes cuites", 200, 150, 5.5, 30, .9, 1.8, .6, "pates"],
+  ["quinoa", "Quinoa cuit", 150, 120, 4.4, 21, 1.9, 2.8, .9, "cereales_completes"],
+  ["pdt", "Pommes de terre vapeur", 200, 80, 2, 17, .1, 1.8, .8, "legumes"],
+  ["poulet", "Blanc de poulet", 150, 165, 31, 0, 3.6, 0, 0, "poulet"],
+  ["steak_hache", "Steak haché 5 %", 125, 140, 21, 0, 5, 0, 0, "viande_boeuf"],
+  ["jambon", "Jambon blanc", 50, 115, 20, 1, 3.5, 0, 1, "viande_porc"],
+  ["saumon", "Saumon", 150, 200, 21, 0, 13, 0, 0, "poisson_gras"],
+  ["thon", "Thon au naturel", 100, 110, 25, 0, 1, 0, 0, "poisson"],
+  ["crevettes", "Crevettes", 100, 100, 24, 0, .3, 0, 0, "fruits_mer"],
+  ["oeuf", "Œuf", 55, 140, 12.5, .7, 9.5, 0, .4, "oeufs"],
+  ["tofu", "Tofu", 150, 120, 13, 2, 7, 1, .5, "legumineuses"],
+  ["lentilles", "Lentilles cuites", 200, 115, 9, 17, .4, 8, 1.8, "legumineuses"],
+  ["pois_chiches", "Pois chiches cuits", 150, 140, 7.5, 18, 2.5, 7, 3, "legumineuses"],
+  ["yaourt", "Yaourt nature", 125, 60, 4, 5, 3.2, 0, 5, "dessert_lacte"],
+  ["fromage_blanc", "Fromage blanc 3 %", 100, 75, 7.5, 4, 3, 0, 4, "dessert_lacte"],
+  ["skyr", "Skyr", 150, 62, 11, 4, .2, 0, 4, "dessert_lacte"],
+  ["lait", "Lait demi-écrémé", 250, 46, 3.2, 4.8, 1.6, 0, 4.8, "lait"],
+  ["fromage", "Fromage (emmental, comté…)", 30, 390, 28, 0, 31, 0, 0, "fromage"],
+  ["salade_verte", "Salade verte", 80, 15, 1.3, 1.7, .2, 1.3, .8, "legumes_verts"],
+  ["tomate", "Tomate", 120, 18, .9, 3, .2, 1.2, 2.6, "legumes"],
+  ["carottes", "Carottes", 100, 40, .9, 7, .2, 2.8, 4.7, "legumes_orange"],
+  ["brocoli", "Brocoli", 150, 35, 2.8, 4, .4, 2.6, 1.7, "legumes_verts"],
+  ["haricots_verts", "Haricots verts", 150, 30, 1.8, 4, .2, 3, 1.5, "legumes_verts"],
+  ["legumes_poeles", "Poêlée de légumes", 200, 50, 1.8, 6, 2, 2.5, 3.5, "legumes"],
+  ["soupe_legumes", "Soupe de légumes", 300, 35, 1.2, 5, 1, 1.5, 2, "legumes"],
+  ["avocat", "Avocat", 80, 160, 2, 1.8, 15, 6.7, .7, "legumes_gras"],
+  ["pomme", "Pomme", 150, 52, .3, 12, .2, 2.4, 10, "fruit"],
+  ["banane", "Banane", 120, 90, 1.1, 20, .3, 2.6, 12, "fruit_banane"],
+  ["orange", "Orange", 150, 47, .9, 9, .1, 2.4, 9, "agrume"],
+  ["fruits_rouges", "Fruits rouges", 100, 45, .8, 8, .3, 4, 7, "agrume"],
+  ["compote", "Compote", 100, 70, .3, 16, .1, 1.5, 14, "fruit"],
+  ["amandes", "Amandes / noix", 30, 600, 21, 8, 52, 12, 4.4, "noix"],
+  ["chocolat", "Chocolat noir 70 %", 20, 570, 8, 33, 42, 11, 24, "chocolat"],
+  ["huile", "Huile d'olive", 10, 900, 0, 0, 100, 0, 0, "huile"],
+  ["beurre", "Beurre", 10, 745, .7, .6, 82, 0, .6, "beurre"],
+  ["cafe_lait", "Café au lait", 250, 30, 1.7, 2.6, 1.4, 0, 2.6, "lait"],
+  ["jus_orange", "Jus d'orange", 250, 45, .7, 10, .2, .2, 9, "agrume"],
+  ["soda", "Soda sucré", 330, 42, 0, 10.6, 0, 0, 10.6, "boisson"],
+  ["biere", "Bière", 330, 43, .5, 3.6, 0, 0, 0, "boisson"],
+  ["vin", "Vin", 150, 85, .1, 2.6, 0, 0, .6, "boisson"],
+  ["kebab", "Kebab", 350, 215, 12, 20, 9.5, 1.5, 2, "sandwich"],
+  ["salade_pates", "Salade de pâtes", 250, 160, 5, 22, 6, 1.5, 2, "pates"]
+];
+// Micronutriments pour 100 g par type d'aliment : vA µg, vC mg, vD µg, vE mg, vK µg, vB6 mg, vB9 µg, vB12 µg, ca mg, fe mg, mg mg, k mg, zn mg, na mg
+const MICRO_CAT = {
+  patisserie: [80, 1, .4, 1.5, 4, .05, 15, .2, 40, 1.2, 12, 110, .4, 220], patisserie_noix: [30, .5, .2, 6, 4, .1, 25, .1, 60, 1.6, 60, 220, 1.2, 150],
+  patisserie_frit: [30, 0, .2, 2.5, 8, .05, 30, .1, 30, 1.5, 15, 100, .4, 300], patisserie_lait: [120, .5, .4, 1, 2, .05, 15, .4, 120, .8, 15, 140, .6, 120],
+  patisserie_choco: [60, 0, .4, 1.5, 3, .05, 15, .2, 45, 2.5, 50, 250, .9, 300], patisserie_fruit: [90, 8, .3, 1, 3, .05, 15, .2, 40, .8, 10, 140, .3, 180],
+  dessert_lacte: [120, .5, .5, .4, 1, .05, 8, .4, 110, .3, 12, 160, .5, 70], dessert_choco: [100, 0, .6, 1, 2, .05, 15, .4, 60, 2, 50, 220, .9, 60],
+  viande_boeuf: [5, 0, .2, .4, 1.5, .45, 7, 2.2, 12, 2.6, 22, 330, 5, 60], viande_porc: [3, .5, .6, .3, 0, .5, 5, .7, 20, 1, 24, 350, 2.6, 250],
+  volaille_gras: [25, 0, .1, .7, 4, .25, 10, .3, 15, 2.5, 18, 250, 2, 350], poulet: [9, 0, .1, .3, .3, .6, 4, .3, 15, .9, 29, 255, 1, 74],
+  poulet_frit: [40, 0, .2, .5, 3, .4, 5, .3, 15, 1, 18, 200, 1.7, 450], plat_poulet_sauce: [60, 4, .1, 1, 8, .25, 12, .2, 25, 1.1, 25, 260, 1, 350],
+  poisson: [10, 6, 3, .8, 2, .4, 10, 2, 20, .7, 30, 350, .5, 250], poisson_gras: [30, 0, 10, 2.5, .5, .6, 20, 3.5, 12, .5, 30, 380, .5, 70],
+  poisson_frit: [10, 5, 1.5, 2, 8, .3, 15, .8, 20, .8, 25, 350, .4, 300], poisson_riz: [15, 1, 2, .4, 3, .15, 8, .8, 10, .4, 15, 110, .6, 400],
+  fruits_mer: [30, 4, .3, 1.5, 1, .1, 30, 12, 60, 4, 40, 250, 5, 350], fruits_mer_frit: [15, 1, .2, 2, 10, .1, 15, 1.5, 40, 1, 25, 200, 1.2, 450],
+  abats: [1000, 1, .5, .5, 5, .1, 60, 9, 10, 5, 12, 140, .9, 700], oeufs: [140, 1, 1.5, 1.2, 4, .12, 40, .8, 55, 1.5, 12, 140, 1.1, 350],
+  fromage: [250, 0, .5, .6, 3, .08, 20, 1.5, 650, .4, 28, 100, 3.5, 650], lait: [15, 1, .03, .03, .2, .04, 5, .45, 120, 0, 11, 150, .4, 44],
+  salade_fromage: [100, 12, .1, 1.8, 25, .1, 25, .4, 180, .6, 15, 220, .9, 380], salade_composee: [120, 8, .2, 1.2, 60, .15, 40, .3, 90, 1, 15, 250, .8, 400],
+  legumes: [30, 6, 0, .8, 8, .06, 80, 0, 20, .8, 20, 300, .3, 200], legumes_verts: [300, 15, 0, .6, 120, .1, 100, 0, 40, 1, 15, 250, .3, 20],
+  legumes_orange: [830, 6, 0, .7, 13, .14, 19, 0, 33, .3, 12, 320, .2, 69], legumes_gras: [10, 10, 0, 2, 20, .25, 80, 0, 15, .6, 28, 450, .6, 250],
+  legumineuses: [2, 1, 0, 1, 6, .2, 80, 0, 50, 2.5, 60, 300, 1.5, 300], frit: [10, 5, 0, 1.5, 15, .3, 25, 0, 18, .8, 30, 500, .4, 300],
+  pain: [20, 3, 0, 1, 10, .1, 60, 0, 60, 2, 25, 150, .8, 480], sandwich: [50, 2, .2, .8, 6, .2, 40, .6, 120, 2, 22, 220, 1.6, 600],
+  sandwich_mer: [40, 1, .2, 1, 6, .15, 35, 1.5, 70, 1.2, 25, 200, 2, 600], burger: [20, 1, .1, .4, 3, .15, 35, 1, 60, 2.3, 20, 230, 2.3, 450],
+  pizza: [70, 2, .2, .9, 5, .1, 40, .5, 190, 2, 22, 180, 1.3, 600], pates: [30, 4, 0, .8, 5, .08, 15, .1, 30, 1, 20, 150, .6, 300],
+  pates_viande: [60, 4, .1, 1, 6, .12, 15, .6, 70, 1.4, 22, 250, 1.5, 380], pates_fromage: [70, 0, .3, .4, 1, .06, 12, .4, 130, .8, 18, 110, 1, 400],
+  nouilles: [20, 3, .3, 1, 10, .12, 20, .3, 40, 1, 25, 150, .9, 550], plat_riz: [40, 2, .2, .6, 10, .12, 15, .3, 25, .9, 18, 130, .8, 380],
+  plat_riz_mer: [30, 4, 1, .8, 6, .15, 15, 2, 35, 1.5, 25, 200, 1, 400], asiatique: [20, 2, .1, .8, 10, .15, 20, .3, 25, 1.2, 18, 170, 1, 500],
+  soupe: [20, 1, 0, .2, 3, .05, 10, .1, 20, .6, 12, 130, .3, 450], soupe_creme: [50, 2, .3, .3, 2, .05, 8, 3, 50, 1.2, 12, 180, .6, 400],
+  soupe_fromage: [40, 2, .1, .2, 2, .05, 10, .2, 90, .5, 10, 120, .5, 420], soupe_nouilles: [10, 1, .1, .2, 5, .08, 8, .3, 15, .7, 10, 120, .6, 380],
+  petitdej_sucre: [60, .5, .5, .6, 2, .05, 20, .3, 90, 1.6, 15, 140, .5, 400], cereales: [0, 10, 2, 1, 1, 1.4, 200, 1.5, 100, 12, 40, 200, 3, 400],
+  cereales_completes: [0, 0, 0, .4, 2, .12, 32, 0, 50, 4, 140, 360, 3.6, 5], fruit: [3, 5, 0, .2, 2, .04, 3, 0, 6, .1, 5, 107, .04, 1],
+  fruit_banane: [3, 9, 0, .1, .5, .37, 20, 0, 5, .3, 27, 360, .15, 1], agrume: [11, 45, 0, .2, 1, .06, 30, 0, 40, .1, 10, 180, .07, 1],
+  noix: [0, 0, 0, 25, 0, .14, 44, 0, 270, 3.7, 270, 730, 3.1, 1], chocolat: [2, 0, 0, .6, 7, .04, 12, .3, 73, 11, 228, 715, 3.3, 20],
+  huile: [0, 0, 0, 14, 60, 0, 0, 0, 1, .6, 0, 1, 0, 2], beurre: [680, 0, 1.5, 2.3, 7, 0, 3, .2, 24, 0, 2, 24, .1, 11],
+  boisson: [0, 0, 0, 0, 0, .02, 1, 0, 5, 0, 5, 20, 0, 5], defaut: [30, 2, .2, .5, 5, .1, 15, .3, 40, 1, 20, 200, .6, 300]
 };
-const SYSTEM_NUTRI = `Tu es un nutritionniste-diététicien diplômé, expert en estimation visuelle des portions et en composition des aliments (tables CIQUAL de l'ANSES et USDA FoodData Central). Tu es rigoureux, analytique et prudent. Tu réponds en français.`;
-function buildPrompt(withPhoto) {
-  const hint = $("#hint").value.trim();
-  return `${withPhoto ? "MISSION : analyser la photo de repas jointe." : "MISSION : analyser le repas décrit ci-dessous (pas de photo)."}
-Type de repas : ${MEALTYPES[st.mealType] || "inconnu"}.
-${hint ? "Précisions de l'utilisateur (prioritaires sur ton estimation visuelle) : " + hint : "Aucune précision de l'utilisateur."}
-
-Méthode :
-1. Identifie chaque aliment distinct, y compris boissons, pain, sauces et assaisonnements visibles.
-2. Estime le poids cuit de chaque portion en grammes avec des repères d'échelle : assiette plate ≈ 26–27 cm, fourchette ≈ 19 cm, cuillère à soupe ≈ 15 ml, poing ≈ 250 ml, paume ≈ 100 g de viande.
-3. Déduis le mode de cuisson et ajoute en lignes séparées les matières grasses cachées probables (huile, beurre, crème, vinaigrette) quand elles sont plausibles.
-4. Pour chaque ligne : kcal, protéines, glucides, lipides, fibres, sucres (g) et micronutriments.
-5. Contrôle : kcal ≈ 4×protéines + 4×glucides + 9×lipides + 2×fibres (±8 %). Corrige si besoin.
-6. kcal_low et kcal_high encadrent le total avec une largeur de 100 kcal maximum (±50 kcal) quand l'image est nette ; élargis seulement si l'image est ambiguë, et baisse alors la confiance.
-
-Champs :
-- dish : nom court et appétissant du plat.
-- x, y : position approximative du centre de l'aliment dans la photo, de 0 à 1 (x de gauche à droite, y de haut en bas). Sans photo, mets 0.5.
-- micro : vA µg ER, vC mg, vD µg, vE mg, vK µg, vB6 mg, vB9 µg, vB12 µg, ca mg (calcium), fe mg (fer), mg mg (magnésium), k mg (potassium), zn mg (zinc), na mg (sodium).
-- confidence : de 0 à 1.
-- score : qualité nutritionnelle du repas de 0 à 100 (densité nutritionnelle, fibres, protéines, ultra-transformation, sodium, sucres ajoutés).
-- tags : 3 étiquettes courtes au maximum.
-- advice : 2 phrases maximum, conseil professionnel concret et bienveillant sur ce repas.
-- Si l'image ne montre pas de nourriture : food = false, reason = explication courte, items vide, autres nombres à 0. Sinon food = true et reason vide.
-${!withPhoto ? "\nDescription du repas : " + (hint || "(vide)") : ""}`;
+const FOODS = {};
+[...DISHES, ...BASICS].forEach(([id, name, portion, kcal, p, c, f, fib, sug, cat]) => FOODS[id] = { id, name, portion, kcal, p, c, f, fib, sug, cat });
+const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function makeItem(id, grams) {
+  const F = FOODS[id], k = grams / 100, mc = MICRO_CAT[F.cat] || MICRO_CAT.defaut;
+  const it = { name: F.name, food: id, cat: F.cat, grams, kcal: F.kcal * k, protein: F.p * k, carbs: F.c * k, fat: F.f * k, fiber: F.fib * k, sugar: F.sug * k, micro: Object.fromEntries(MICRO_KEYS.map((m, i) => [m, mc[i] * k])) };
+  it.base = { ...it, micro: { ...it.micro } };
+  return it;
 }
-function apiErrorText(e, A) {
-  if (!A) return "Impossible de charger le module IA. Vérifie ta connexion internet.";
-  if (e instanceof A.APIUserAbortError) return null;
-  if (e instanceof A.AuthenticationError) return "Clé API invalide. Vérifie-la dans l'onglet Profil.";
-  if (e instanceof A.PermissionDeniedError) return "Cette clé n'a pas accès au modèle. Vérifie ton compte Anthropic.";
-  if (e instanceof A.RateLimitError) return "Limite de requêtes atteinte. Réessaie dans une minute.";
-  if (e instanceof A.BadRequestError) return /credit|balance|billing/i.test(e.message) ? "Crédit API insuffisant : recharge ton compte sur console.anthropic.com." : "Requête refusée : " + (e.error?.error?.message || e.message);
-  if (e instanceof A.APIConnectionError) return "Pas de connexion à internet ou serveur injoignable.";
-  if (e instanceof A.InternalServerError || e?.status === 529) return "Les serveurs d'Anthropic sont surchargés. Réessaie dans un instant.";
-  return "Une erreur est survenue : " + (e?.message || e);
+function searchFoods(q) {
+  const n = norm(q.trim()); if (!n) return [];
+  return Object.values(FOODS).map(F => { const nm = norm(F.name), i = nm.indexOf(n); return { F, s: i < 0 ? -1 : (i === 0 ? 0 : 1) + (DISHES.some(d => d[0] === F.id) ? .5 : 0) }; })
+    .filter(x => x.s >= 0).sort((a, b) => a.s - b.s || a.F.name.localeCompare(b.F.name)).slice(0, 7).map(x => x.F);
 }
+let clfPromise = null;
+function getClassifier() {
+  if (!clfPromise) clfPromise = (async () => {
+    const { pipeline } = await import(TF_URL);
+    const files = {};
+    return pipeline("image-classification", MODEL_ID, { dtype: "q4", device: "wasm", progress_callback: p => {
+      if (p.status === "progress" && p.total) { files[p.file] = [p.loaded, p.total]; const v = Object.values(files); st.dl = v.reduce((a, x) => a + x[0], 0) / v.reduce((a, x) => a + x[1], 0); onModelProgress(); }
+    } });
+  })().then(c => { st.dl = null; lsSet("modelReady", true); onModelProgress(); return c; }).catch(e => { clfPromise = null; st.dl = null; onModelProgress(); throw e; });
+  return clfPromise;
+}
+function onModelProgress() {
+  const el = $("#modelStatus"); if (!el) return;
+  if (st.dl != null) { el.textContent = "Téléchargement " + R(st.dl * 100) + " %"; el.style.color = "var(--warn)"; }
+  else if (lsGet("modelReady", false)) { el.textContent = "Prêt sur cet appareil ✓"; el.style.color = "var(--good)"; $("#modelDl").hidden = true; $("#keyCard").hidden = true; }
+  else { el.textContent = "Pas encore téléchargé"; el.style.color = "var(--muted)"; }
+}
+function computeScore(items, t) {
+  if (!t.kcal) return 0;
+  let s = 62; const pPct = t.protein * 4 / t.kcal, fPct = t.fat * 9 / t.kcal, fib = t.fiber / t.kcal * 1000;
+  if (pPct >= .2) s += 10; else if (pPct < .1) s -= 8;
+  if (fib >= 14) s += 12; else if (fib >= 8) s += 5; else s -= 6;
+  if (fPct > .45) s -= 10;
+  if (t.sugar > 30) s -= 12; else if (t.sugar > 15) s -= 5;
+  if (items.reduce((a, it) => a + (it.micro?.na || 0), 0) > 1500) s -= 8;
+  const cats = items.map(i => i.cat || "");
+  if (cats.some(c => /legume|salade|fruit|agrume|legumineuse/.test(c))) s += 8;
+  if (cats.some(c => /frit|patisserie|dessert|boisson|chocolat/.test(c))) s -= 6;
+  return Math.max(5, Math.min(97, R(s)));
+}
+function adviceFor(t) {
+  const out = [];
+  if (t.protein < 20 && t.kcal > 300) out.push("Ajoute une source de protéines (œuf, poulet, poisson, skyr ou légumineuses) pour tenir jusqu'au prochain repas.");
+  if (t.fiber < 5) out.push("Complète avec des légumes ou un fruit : c'est le moyen le plus simple d'augmenter les fibres.");
+  if (t.sugar > 30) out.push("Repas riche en sucres : garde-le pour une occasion et accompagne-le d'une source de protéines.");
+  if (t.kcal && t.fat * 9 > t.kcal * .45) out.push("Repas riche en graisses : alterne avec une cuisson vapeur ou au four la prochaine fois.");
+  if (!out.length) out.push("Repas bien équilibré : protéines, fibres et énergie sont dans de bonnes proportions.");
+  return out.slice(0, 2).join(" ");
+}
+function tagsFor(t) {
+  const tags = [];
+  if (t.protein >= 30 || (t.kcal && t.protein * 4 / t.kcal >= .25)) tags.push("riche en protéines");
+  if (t.fiber >= 8) tags.push("riche en fibres");
+  if (t.sugar > 25) tags.push("sucré");
+  if (t.kcal && t.fat * 9 / t.kcal > .45) tags.push("gras");
+  if (t.kcal && t.kcal < 350) tags.push("léger");
+  return tags.slice(0, 3);
+}
+function showMsg(title, msg) { const r = $("#result"); r.hidden = false; r.innerHTML = `<div class="empty"><svg class="fox" viewBox="0 0 64 64">${FOX.slice(FOX.indexOf(">") + 1, -6)}</svg><b>${esc(title)}</b><span>${esc(msg)}</span></div>`; }
 
 let stepTimer, elapsedTimer;
 function setThinking(on) {
@@ -466,111 +649,117 @@ function setThinking(on) {
   drop.classList.toggle("scanning", on && !!st.photo);
   clearInterval(stepTimer); clearInterval(elapsedTimer);
   const steps = $$("#steps div"); steps.forEach(s => s.classList.remove("on", "done"));
-  $("#prog").style.width = "0%";
+  $("#prog").style.width = "0%"; $("#elapsed").textContent = "";
   if (on) {
     const t0 = Date.now(); let i = 0; steps[0].classList.add("on");
-    stepTimer = setInterval(() => { if (i < steps.length - 1) { steps[i].classList.add("done"); i++; steps[i].classList.add("on"); } }, 4500);
-    elapsedTimer = setInterval(() => { const s = (Date.now() - t0) / 1000; $("#elapsed").textContent = R(s) + " s"; $("#prog").style.width = Math.min(92, 100 * (1 - Math.exp(-s / 18))) + "%"; }, 250);
-    $("#elapsed").textContent = "0 s";
+    stepTimer = setInterval(() => { if (st.dl != null) return; if (i < steps.length - 1) { steps[i].classList.add("done"); i++; steps[i].classList.add("on"); } }, 600);
+    elapsedTimer = setInterval(() => {
+      if (st.dl != null) { $("#elapsed").textContent = "téléchargement du modèle " + R(st.dl * 100) + " %"; $("#prog").style.width = R(st.dl * 100) + "%"; return; }
+      const s = (Date.now() - t0) / 1000; $("#elapsed").textContent = R(s) + " s"; $("#prog").style.width = Math.min(95, 100 * (1 - Math.exp(-s / 1.5))) + "%";
+    }, 150);
     if (innerWidth < 880) $("#resultCard").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
   }
   updateAnalyzeBtn();
 }
 async function analyze(withPhoto) {
-  if (!hasKey()) { toast("Ajoute ta clé API dans Profil."); go("profile"); return; }
-  if (!withPhoto && !$("#hint").value.trim()) { toast("Décris ton repas dans « Précisions » pour l'analyser sans photo."); $("#hint").focus(); return; }
-  if (withPhoto && !st.photo) return;
-  st.stream?.abort();
-  $("#labels").innerHTML = "";
-  let A = null;
-  setThinking(true);
+  if (!withPhoto) { st.analysis = { dish: "", items: [], withPhoto: false, confidence: 1, alts: [] }; $("#resultEmpty").hidden = true; $("#thinking").hidden = true; renderResult(false); setTimeout(() => $("#addFood")?.focus(), 60); return; }
+  if (!st.photo) return;
+  const run = st.runId = (st.runId || 0) + 1;
+  st.stream = { abort() { st.runId++; st.stream = null; setThinking(false); $("#resultEmpty").hidden = false; toast("Analyse arrêtée"); } };
+  $("#labels").innerHTML = ""; setThinking(true);
   try {
-    const { Anthropic, c } = await client(); A = Anthropic;
-    const content = [];
-    if (withPhoto) content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data: st.photo.b64 } });
-    content.push({ type: "text", text: buildPrompt(withPhoto) });
-    let got = 0;
-    const msg = await callClaude(c, A, {
-      model: MODEL, max_tokens: 16000, system: SYSTEM_NUTRI,
-      output_config: { effort: st.settings.effort || "high", format: { type: "json_schema", schema: ANALYSIS_SCHEMA } },
-      messages: [{ role: "user", content }]
-    }, d => { got += d.length; $("#prog").style.width = Math.min(99, 70 + got / 40) + "%"; $$("#steps div").forEach(s => s.classList.add("on")); });
-    if (msg.stop_reason === "refusal") throw { friendly: "L'analyse a été refusée pour cette image. Essaie une autre photo." };
-    if (msg.stop_reason === "max_tokens") throw { friendly: "Réponse trop longue, interrompue. Relance l'analyse." };
-    const text = msg.content.filter(b => b.type === "text").map(b => b.text).join("");
-    let r; try { r = JSON.parse(text); } catch { throw { friendly: "Réponse illisible du nutritionniste. Relance l'analyse." }; }
-    setThinking(false);
-    if (!r.food) { showMsg("Pas de nourriture détectée", r.reason || "Reprends la photo en cadrant bien l'assiette."); return; }
-    if (!Array.isArray(r.items) || !r.items.length) throw { friendly: "Aucun aliment identifié. Relance l'analyse ou ajoute des précisions." };
-    r.items = r.items.map(it => {
-      const o = { name: String(it.name || "Aliment"), x: clamp01(it.x), y: clamp01(it.y), micro: {} };
-      ["grams", ...MACRO_KEYS].forEach(k => o[k] = Math.max(0, +it[k] || 0)); MICRO_KEYS.forEach(k => o.micro[k] = Math.max(0, +it.micro?.[k] || 0));
-      o.base = { ...o, micro: { ...o.micro } }; return o;
-    });
-    st.analysis = { ...r, withPhoto };
-    renderResult(true);
-    if (withPhoto) placeLabels();
-  } catch (e) {
+    const clf = await getClassifier();
+    if (run !== st.runId) return;
+    const res = await clf(st.photo.preview, { top_k: 5 });
+    if (run !== st.runId) return;
     st.stream = null; setThinking(false);
-    const msg = e?.friendly || apiErrorText(e, A);
-    if (msg === null) { $("#resultEmpty").hidden = false; toast("Analyse arrêtée"); return; }
-    showMsg("Analyse impossible", msg);
+    const top = res.filter(r => FOODS[r.label]);
+    if (!top.length) throw new Error("aucun résultat");
+    const best = top[0];
+    st.analysis = { dish: FOODS[best.label].name, items: [makeItem(best.label, FOODS[best.label].portion)], withPhoto: true, confidence: best.score, alts: top.slice(0, 4).map(r => ({ id: r.label, score: r.score })) };
+    renderResult(true); placeLabels();
+  } catch (e) {
+    if (run !== st.runId) return;
+    st.stream = null; setThinking(false);
+    showMsg("Analyse impossible", !lsGet("modelReady", false) ? "Le modèle doit être téléchargé une première fois (60 Mo) : vérifie ta connexion internet, idéalement en Wi-Fi, puis réessaie." : "La photo n'a pas pu être analysée. Réessaie, ou utilise la saisie manuelle.");
   }
 }
 const clamp01 = v => Math.max(.06, Math.min(.94, Number.isFinite(+v) ? +v : .5));
 function placeLabels() {
-  const a = st.analysis; if (!a) return;
-  $("#labels").innerHTML = a.items.filter(it => it.grams > 0 && !/huile|beurre|vinaigrette|sel|poivre/i.test(it.name) || a.items.length <= 2).slice(0, 7)
-    .map((it, i) => `<div class="lbl" style="left:${it.x * 100}%;top:${it.y * 100}%"><span class="d" style="animation-delay:${i * .12}s,${i * .12}s"></span><span class="tx" style="animation-delay:${.1 + i * .12}s">${esc(it.name)}<b>${fmt(it.kcal)}</b></span></div>`).join("");
+  const a = st.analysis; if (!a?.withPhoto || !a.items.length) { $("#labels").innerHTML = ""; return; }
+  const it = a.items[0];
+  $("#labels").innerHTML = `<div class="lbl" style="left:50%;top:50%"><span class="d"></span><span class="tx" style="animation-delay:.12s">${esc(it.name)}<b>${fmt(it.kcal)}</b></span></div>`;
 }
-function showMsg(title, msg) { const r = $("#result"); r.hidden = false; r.innerHTML = `<div class="empty"><svg class="fox" viewBox="0 0 64 64">${FOX.slice(FOX.indexOf(">") + 1, -6)}</svg><b>${esc(title)}</b><span>${esc(msg)}</span></div>`; }
 $("#analyzeBtn").addEventListener("click", () => analyze(true));
 $("#textOnlyBtn").addEventListener("click", () => analyze(false));
 $("#stopBtn").addEventListener("click", () => st.stream?.abort());
 
 function renderResult(animate) {
-  const a = st.analysis, { totals } = totalsFromItems(a.items);
-  const spread = Math.min(150, Math.max(50, ((a.kcal_high || 0) - (a.kcal_low || 0)) / 2 || 50));
-  const lo = Math.max(0, R((totals.kcal - spread) / 10) * 10), hi = R((totals.kcal + spread) / 10) * 10;
-  const sc = Math.max(0, Math.min(100, R(+a.score || 0))), scCol = sc >= 70 ? "var(--good)" : sc >= 45 ? "var(--warn)" : "var(--bad)";
-  const r = $("#result"); r.hidden = false;
-  r.innerHTML = `<div class="result-head"><div style="min-width:0"><div class="eyebrow">${MEALTYPES[st.mealType]} · confiance ${R((+a.confidence || 0) * 100)} %</div><h2>${esc(a.dish || "Ton repas")}</h2>
-      <div class="tags">${(a.tags || []).slice(0, 3).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>
+  const a = st.analysis, r = $("#result"); r.hidden = false;
+  const search = `<div class="field" style="margin-top:14px"><label for="addFood">${a.items.length ? "Ajouter un aliment à l'assiette" : "Cherche un plat ou un aliment"}</label>
+    <input class="input" id="addFood" type="search" placeholder="Ex. : pizza, riz, poulet, salade, soda…" autocomplete="off"><div id="sugg" style="display:grid;gap:6px;margin-top:6px"></div></div>`;
+  if (!a.items.length) {
+    r.innerHTML = `<div class="result-head"><div><div class="eyebrow">Saisie manuelle</div><h2>Compose ton repas</h2></div></div><p class="note" style="margin-top:6px">Ajoute chaque élément de ton assiette, puis ajuste les grammes.</p>${search}`;
+    bindSearch(); return;
+  }
+  const { totals } = totalsFromItems(a.items);
+  const spread = Math.max(50, R(totals.kcal * .2 / 10) * 10), lo = Math.max(0, R((totals.kcal - spread) / 10) * 10), hi = R((totals.kcal + spread) / 10) * 10;
+  const sc = computeScore(a.items, totals), scCol = sc >= 70 ? "var(--good)" : sc >= 45 ? "var(--warn)" : "var(--bad)", tags = tagsFor(totals), advice = adviceFor(totals);
+  const title = a.items.length > 1 ? a.items.slice(0, 2).map(i => i.name).join(" + ") + (a.items.length > 2 ? " …" : "") : a.items[0].name;
+  const conf = a.withPhoto ? `reconnu sur l'iPhone · confiance ${R(a.confidence * 100)} %` : "saisie manuelle";
+  const altList = (a.alts || []).slice(1).filter(x => x.score >= .02);
+  const alts = !a.withPhoto ? "" : !altList.length ? `<div class="note" style="margin-top:10px">Ce n'est pas ça ? Retire-le avec ✕ et cherche le bon plat plus bas.</div>` : `<div class="note" style="margin-top:10px">${a.confidence < .6 ? "<b style='color:var(--warn)'>Pas sûr ?</b> " : ""}Ce n'est pas ça ? Touche le bon plat :</div><div class="tags">${altList.map(x => `<button class="tag" type="button" data-alt="${x.id}" style="border:0;cursor:pointer">${esc(FOODS[x.id].name)} · ${R(x.score * 100)} %</button>`).join("")}</div>`;
+  r.innerHTML = `<div class="result-head"><div style="min-width:0"><div class="eyebrow">${MEALTYPES[st.mealType]} · ${conf}</div><h2>${esc(title)}</h2>
+      <div class="tags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>
     <div class="kcal-big"><b class="num" id="resKcal">${animate ? 0 : fmt(totals.kcal)}</b><span>kcal · ${fmt(lo)}–${fmt(hi)}</span></div></div>
+    ${alts}
     ${macro4(totals)}
-    <div class="score"><div class="s" style="background:color-mix(in srgb,${scCol} 16%,transparent);color:${scCol}">${sc}</div><div><b style="font-size:14px">Score qualité nutritionnelle</b><div class="note">Densité en nutriments, fibres, protéines, transformation, sodium.</div></div></div>
+    <div class="score"><div class="s" style="background:color-mix(in srgb,${scCol} 16%,transparent);color:${scCol}">${sc}</div><div><b style="font-size:14px">Score qualité nutritionnelle</b><div class="note">Protéines, fibres, sucres, graisses et sel du repas.</div></div></div>
     <div class="sep"></div>
     <div class="items-wrap"><table class="items"><thead><tr><th>Aliment</th><th>Poids (g)</th><th>kcal</th><th>P</th><th>G</th><th>L</th><th></th></tr></thead><tbody>
-      ${a.items.map((it, i) => `<tr style="animation-delay:${animate ? i * .07 : 0}s"><td>${esc(it.name)}</td><td><input type="number" inputmode="numeric" min="0" step="5" value="${R(it.grams)}" data-i="${i}" aria-label="Poids de ${esc(it.name)} en grammes"></td><td>${fmt(it.kcal)}</td><td>${fmt(it.protein, 1)}</td><td>${fmt(it.carbs, 1)}</td><td>${fmt(it.fat, 1)}</td><td><button class="x" data-rm="${i}" aria-label="Retirer ${esc(it.name)}">✕</button></td></tr>`).join("")}
+      ${a.items.map((it, i) => `<tr style="animation-delay:${animate ? i * .07 : 0}s"><td>${esc(it.name)}</td><td><input type="number" inputmode="numeric" min="0" step="5" value="${R(it.grams)}" data-i="${i}" aria-label="Poids de ${esc(it.name)} en grammes"></td><td>${fmt(it.kcal)}</td><td>${fmt(it.protein, 1)}</td><td>${fmt(it.carbs, 1)}</td><td>${fmt(it.fat, 1)}</td><td><button class="x" type="button" data-rm="${i}" aria-label="Retirer ${esc(it.name)}">✕</button></td></tr>`).join("")}
     </tbody></table></div>
-    <p class="note">Tu connais le poids exact ? Modifie-le : toutes les valeurs se recalculent.</p>
-    ${a.advice ? `<div class="advice">${FORK}<div>${esc(a.advice)}</div></div>` : ""}
+    <p class="note">Ajuste le poids de chaque élément : tout se recalcule. Valeurs moyennes issues des tables CIQUAL et USDA.</p>
+    ${search}
+    <div class="advice">${FORK}<div>${esc(advice)}</div></div>
     <div class="sep"></div>
-    <div class="row"><button class="btn primary" id="saveMeal" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>Ajouter au journal</button><button class="btn" id="reanalyze">Réanalyser</button></div>`;
+    <div class="row"><button class="btn primary" id="saveMeal" type="button" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>Ajouter au journal</button>${a.withPhoto && st.photo ? '<button class="btn" id="reanalyze" type="button">Réanalyser</button>' : ""}</div>`;
   if (animate) countUp($("#resKcal"), R(totals.kcal), { dur: 1500 });
   r.querySelectorAll("input[data-i]").forEach(inp => inp.addEventListener("change", () => {
     const it = a.items[+inp.dataset.i], b = it.base, g = Math.max(0, +inp.value || 0), f = b.grams ? g / b.grams : 0;
     MACRO_KEYS.forEach(k => it[k] = b[k] * f); MICRO_KEYS.forEach(k => it.micro[k] = b.micro[k] * f); it.grams = g;
-    renderResult(false); if (a.withPhoto) placeLabels();
+    renderResult(false); placeLabels();
   }));
-  r.querySelectorAll("[data-rm]").forEach(btn => btn.addEventListener("click", () => {
-    a.items.splice(+btn.dataset.rm, 1);
-    if (!a.items.length) { showMsg("Plus aucun aliment", "Relance une analyse."); return; }
-    renderResult(false); if (a.withPhoto) placeLabels();
+  r.querySelectorAll("[data-rm]").forEach(btn => btn.addEventListener("click", () => { a.items.splice(+btn.dataset.rm, 1); renderResult(false); placeLabels(); }));
+  r.querySelectorAll("[data-alt]").forEach(btn => btn.addEventListener("click", () => {
+    const id = btn.dataset.alt, alt = a.alts.find(x => x.id === id);
+    a.items[0] = makeItem(id, FOODS[id].portion); a.confidence = alt.score; a.alts = [alt, ...a.alts.filter(x => x.id !== id)];
+    renderResult(false); placeLabels(); toast("Plat corrigé : " + FOODS[id].name);
   }));
-  $("#reanalyze").onclick = () => analyze(a.withPhoto && !!st.photo);
+  const re = $("#reanalyze"); if (re) re.onclick = () => analyze(true);
   $("#saveMeal").onclick = () => {
     const t = totalsFromItems(a.items), round = (v, d) => +(+v).toFixed(d);
     const meal = {
-      id: newId(), at: scanAt(), type: st.mealType, dish: a.dish || "Repas",
-      items: a.items.map(({ base, x, y, ...it }) => ({ ...it, grams: R(it.grams), kcal: R(it.kcal), protein: round(it.protein, 1), carbs: round(it.carbs, 1), fat: round(it.fat, 1), fiber: round(it.fiber, 1), sugar: round(it.sugar, 1), micro: Object.fromEntries(MICRO_KEYS.map(k => [k, round(it.micro[k], 2)])) })),
+      id: newId(), at: scanAt(), type: st.mealType, dish: title,
+      items: a.items.map(({ base, ...it }) => ({ ...it, grams: R(it.grams), kcal: R(it.kcal), protein: round(it.protein, 1), carbs: round(it.carbs, 1), fat: round(it.fat, 1), fiber: round(it.fiber, 1), sugar: round(it.sugar, 1), micro: Object.fromEntries(MICRO_KEYS.map(k => [k, round(it.micro[k], 2)])) })),
       totals: Object.fromEntries(MACRO_KEYS.map(k => [k, round(t.totals[k], 1)])), micro: Object.fromEntries(MICRO_KEYS.map(k => [k, round(t.micro[k], 2)])),
-      kcal_low: lo, kcal_high: hi, score: sc, confidence: +a.confidence || 0, advice: a.advice || "", tags: (a.tags || []).slice(0, 3),
+      kcal_low: lo, kcal_high: hi, score: sc, confidence: a.withPhoto ? a.confidence : 1, advice, tags,
       thumb: a.withPhoto && st.photo ? st.photo.thumb : null
     };
     saveMeal(meal); success(); setTimeout(confetti, 250); toast("Repas ajouté : " + fmt(meal.totals.kcal) + " kcal");
     st.view = dayKey(meal.at); resetScan(); setTimeout(() => go("today"), 900);
   };
+  bindSearch();
+}
+function bindSearch() {
+  const inp = $("#addFood"), box = $("#sugg"); if (!inp) return;
+  const draw = () => {
+    const list = searchFoods(inp.value);
+    box.innerHTML = list.map(F => `<button class="meal" type="button" data-add="${F.id}" style="grid-template-columns:minmax(0,1fr) auto;padding:10px 12px;animation:none"><span class="nm">${esc(F.name)}</span><span class="note num">${F.portion} g · ${fmt(F.kcal * F.portion / 100)} kcal</span></button>`).join("")
+      || (inp.value.trim() ? `<span class="note">Aucun résultat. Essaie un autre mot (ex. : « riz », « poulet », « gâteau »).</span>` : "");
+    box.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => { const F = FOODS[b.dataset.add]; st.analysis.items.push(makeItem(F.id, F.portion)); renderResult(false); placeLabels(); toast(F.name + " ajouté"); }));
+  };
+  inp.addEventListener("input", draw);
 }
 function resetScan() { clearPhoto(); st.analysis = null; $("#hint").value = ""; $("#result").hidden = true; $("#resultEmpty").hidden = false; delete $("#mealTime").dataset.touched; setScanNow(); setMealType(autoMealType()); updateAnalyzeBtn(); }
 
@@ -666,34 +855,37 @@ function bindTips() {
     el.onmouseleave = () => tip.style.opacity = 0;
   });
 }
-$("#aiReportBtn").addEventListener("click", async () => {
-  const out = $("#aiReport"), btn = $("#aiReportBtn");
-  if (!hasKey()) { out.innerHTML = `<span class="note">Ajoute ta clé API dans l'onglet Profil pour générer le bilan.</span>`; return; }
-  const T = targets(), days = periodDays(st.repRange), map = byDay();
-  const lines = days.filter(k => map[k]).map(k => { const s = sumMeals(map[k]); return `${k} : ${R(s.kcal)} kcal, P ${R(s.protein)} g, G ${R(s.carbs)} g, L ${R(s.fat)} g, fibres ${R(s.fiber)} g, sucres ${R(s.sugar)} g, sodium ${R(s.na)} mg, vit C ${R(s.vC)} mg, vit D ${s.vD.toFixed(1)} µg, B12 ${s.vB12.toFixed(1)} µg, fer ${s.fe.toFixed(1)} mg, calcium ${R(s.ca)} mg, magnésium ${R(s.mg)} mg | repas : ${map[k].map(m => m.dish).join(" ; ")}`; });
-  if (!lines.length) { out.textContent = "Aucun repas sur cette période : ajoute des repas pour obtenir un bilan."; return; }
-  const p = st.profile;
-  const prompt = `Rédige le bilan nutritionnel professionnel de ${p.name || "l'utilisateur"} sur ${days.length} jours (${lines.length} jours renseignés).
-Profil : ${p.sex === "f" ? "femme" : "homme"}, ${p.age} ans, ${p.weight} kg, ${p.height} cm, objectif ${({ cut: "perte de gras", maintain: "maintien", bulk: "prise de muscle" })[p.goal]}.
-Cibles quotidiennes : ${T.kcal} kcal, protéines ${T.protein} g, glucides ${T.carbs} g, lipides ${T.fat} g, fibres ${T.fiber} g.
-Données journalières :
-${lines.join("\n")}
-
-Format : texte brut sans markdown ni astérisques, environ 230 mots, avec exactement ces intitulés en majuscules, chacun sur sa propre ligne :
-VERDICT (2 phrases chiffrées)
-POINTS FORTS (2 tirets)
-À CORRIGER (2 à 3 tirets chiffrés, dont les micronutriments à risque)
-PLAN D'ACTION (3 tirets concrets avec des exemples d'aliments et de quantités)
-Ne pose pas de diagnostic médical.`;
-  btn.disabled = true; out.innerHTML = '<span class="row note"><span class="loader" style="width:26px;height:26px"><svg viewBox="0 0 64 64" style="width:26px;height:26px"><circle cx="32" cy="32" r="28"/></svg></span> Le renard étudie ta période…</span>';
-  let A = null;
-  try {
-    const { Anthropic, c } = await client(); A = Anthropic;
-    let txt = "";
-    const msg = await callClaude(c, A, { model: MODEL, max_tokens: 8000, system: SYSTEM_NUTRI, output_config: { effort: "medium" }, messages: [{ role: "user", content: prompt }] }, d => { txt += d; out.textContent = txt; }, false);
-    if (msg.stop_reason === "refusal") out.textContent = "Le bilan n'a pas pu être généré. Réessaie.";
-  } catch (e) { out.textContent = apiErrorText(e, A) || "Bilan arrêté."; }
-  finally { btn.disabled = false; }
+$("#aiReportBtn").addEventListener("click", () => {
+  const out = $("#aiReport"), T = targets(), days = periodDays(st.repRange), map = byDay();
+  const logged = days.filter(k => map[k]).map(k => sumMeals(map[k]));
+  if (!logged.length) { out.textContent = "Aucun repas sur cette période : ajoute des repas pour obtenir un bilan."; return; }
+  const n = logged.length, avg = k => logged.reduce((a, s) => a + s[k], 0) / n;
+  const K = avg("kcal"), P = avg("protein"), F = avg("fiber"), S = avg("sugar"), NA = avg("na"), dK = K - T.kcal;
+  const inT = logged.filter(s => Math.abs(s.kcal / T.kcal - 1) <= .1).length;
+  const low = [...MICRO.vit, ...MICRO.min].filter(m => m[0] !== "na").map(([k, nm, u, ref]) => ({ nm, p: avg(k) / ref })).sort((a, b) => a.p - b.p).filter(m => m.p < .6).slice(0, 3);
+  const good = [], fix = [], plan = [], s = x => (x > 1 ? "s" : "");
+  if (P >= T.protein * .9) good.push(`Protéines solides : ${fmt(P)} g par jour en moyenne (${R(P / T.protein * 100)} % de ta cible).`);
+  if (F >= T.fiber * .8) good.push(`Bon apport en fibres : ${fmt(F)} g par jour.`);
+  if (inT >= n / 2) good.push(`Régularité : ${inT} jour${s(inT)} sur ${n} dans ta cible calorique (±10 %).`);
+  if (S <= 50) good.push(`Sucres maîtrisés : ${fmt(S)} g par jour en moyenne.`);
+  if (!good.length) good.push(`Tu as suivi ${n} jour${s(n)} : c'est la base pour progresser.`);
+  if (Math.abs(dK) > T.kcal * .1) { fix.push(`Énergie ${dK > 0 ? "au-dessus" : "en dessous"} de l'objectif : ${fmt(K)} kcal par jour pour ${fmt(T.kcal)} visées (${dK > 0 ? "+" : "−"}${fmt(Math.abs(dK))} kcal).`); plan.push(dK > 0 ? "Réduis d'un tiers les portions de féculents et remplace les boissons sucrées par de l'eau : environ −300 kcal par jour." : "Ajoute une collation de 250 à 300 kcal : un yaourt, un fruit et une poignée d'amandes."); }
+  if (P < T.protein * .9) { fix.push(`Protéines un peu justes : ${fmt(P)} g pour ${T.protein} g visés.`); plan.push("Vise 25 à 30 g de protéines par repas : 150 g de poulet, 2 œufs avec 150 g de skyr, ou 200 g de lentilles."); }
+  if (F < T.fiber * .8) { fix.push(`Fibres insuffisantes : ${fmt(F)} g pour ${T.fiber} g visés.`); plan.push("Ajoute 150 g de légumes au déjeuner et au dîner, et un fruit entier en collation."); }
+  if (S > 50) { fix.push(`Sucres élevés : ${fmt(S)} g par jour.`); plan.push("Remplace le dessert sucré par un fruit ou un yaourt nature 4 jours sur 7."); }
+  if (NA > 2300) { fix.push(`Sel élevé : environ ${fmt(NA / 400, 1)} g de sel par jour.`); plan.push("Limite charcuteries, plats préparés et sauces : cuisine maison avec herbes et épices."); }
+  if (low.length) {
+    fix.push(`Micronutriments à surveiller : ${low.map(m => `${m.nm} (${R(m.p * 100)} %)`).join(", ")}.`);
+    const l = low[0].nm;
+    plan.push(/Vit\. D/.test(l) ? "Mange un poisson gras (saumon, sardines, maquereau) deux fois par semaine." : /Fer/.test(l) ? "Associe légumineuses ou viande rouge maigre à un aliment riche en vitamine C (agrumes, poivron)." : /Calcium/.test(l) ? "Prévois 2 à 3 produits laitiers par jour : yaourt, fromage blanc ou lait." : /Magnésium|Potassium/.test(l) ? "Ajoute chaque jour des légumineuses, des oléagineux ou une banane." : "Varie davantage : un légume vert, un fruit coloré et une portion de céréales complètes chaque jour.");
+  }
+  if (!fix.length) fix.push("Rien d'important à corriger sur cette période : continue ainsi.");
+  const extra = ["Garde ce rythme : scanne chaque repas pour que ton bilan soit le plus juste possible.", "Bois 1,5 à 2 L d'eau par jour, surtout les jours d'entraînement.", "Prépare tes déjeuners à l'avance deux fois par semaine pour garder le cap."];
+  for (let i = 0; plan.length < 3; i++) plan.push(extra[i]);
+  const text = `VERDICT\nSur ${n} jour${s(n)} suivi${s(n)}, tu es en moyenne à ${fmt(K)} kcal par jour pour un objectif de ${fmt(T.kcal)} kcal (${dK >= 0 ? "+" : "−"}${fmt(Math.abs(dK))}). Protéines : ${fmt(P)} g, fibres : ${fmt(F)} g par jour.\n\nPOINTS FORTS\n${good.slice(0, 2).map(x => "– " + x).join("\n")}\n\nÀ CORRIGER\n${fix.slice(0, 3).map(x => "– " + x).join("\n")}\n\nPLAN D'ACTION\n${plan.slice(0, 3).map(x => "– " + x).join("\n")}\n\nBilan calculé sur ton appareil à partir de tes repas. Ce n'est pas un avis médical.`;
+  clearInterval(out._t); out.textContent = "";
+  if (reduce) { out.textContent = text; return; }
+  let i = 0; out._t = setInterval(() => { i += 9; out.textContent = text.slice(0, i); if (i >= text.length) clearInterval(out._t); }, 16);
 });
 
 /* ---------- PROFIL & RÉGLAGES ---------- */
@@ -702,27 +894,19 @@ function readProfile() { return { name: $("#pName").value.trim(), sex: $("#pSex"
 function renderProfile() {
   const T = targets(readProfile()), box = (v, l, i) => `<div style="animation-delay:${i * .05}s"><b class="num">${fmt(v)}</b><span>${l}</span></div>`;
   $("#targets").innerHTML = [[T.kcal, "kcal / jour"], [T.protein, "g protéines"], [T.carbs, "g glucides"], [T.fat, "g lipides"], [T.fiber, "g fibres"], [T.bmr, "kcal métab. de base"]].map((x, i) => box(x[0], x[1], i)).join("");
-  $("#apiKey").value = st.settings.apiKey ? st.settings.apiKey : "";
-  setKeyStatus(st.settings.apiKey ? (st.settings.keyOk ? "ok" : "saved") : "none");
-  $("#effort").value = st.settings.effort; $("#theme").value = st.settings.theme;
+  onModelProgress(); $("#theme").value = st.settings.theme;
   const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
   $("#installState").textContent = standalone ? "Installée sur ton écran d'accueil ✓" : "Ajoute Fox à ton écran d'accueil";
   $("#demoBtn").textContent = st.demo ? "Revenir à mes données" : "Voir avec des données d'exemple";
 }
-function setKeyStatus(s) { const el = $("#keyStatus"); const m = { none: ["Non configurée", "var(--muted)"], saved: ["Enregistrée", "var(--warn)"], ok: ["Connectée", "var(--good)"], bad: ["Invalide", "var(--bad)"], test: ["Test…", "var(--muted)"] }[s]; el.textContent = m[0]; el.style.color = m[1]; }
 $("#profForm").addEventListener("input", e => { if (e.target.closest(".form")) { const T = targets(readProfile()); $$("#targets b").forEach((b, i) => b.textContent = fmt([T.kcal, T.protein, T.carbs, T.fat, T.fiber, T.bmr][i])); } });
 $("#profForm").addEventListener("submit", e => { e.preventDefault(); st.profile = readProfile(); saveProfile(); renderAll(); success(); toast("Objectifs enregistrés : " + fmt(targets().kcal) + " kcal / jour"); });
-$("#keyShow").addEventListener("click", () => { const i = $("#apiKey"); i.type = i.type === "password" ? "text" : "password"; });
-$("#keySave").addEventListener("click", async () => {
-  const k = $("#apiKey").value.trim();
-  if (!/^sk-ant-/.test(k)) { toast("La clé doit commencer par « sk-ant- »."); setKeyStatus("bad"); return; }
-  st.settings.apiKey = k; st.settings.keyOk = false; saveSettings(); setKeyStatus("test");
-  let A = null;
-  try { const { Anthropic, c } = await client(); A = Anthropic; await c.models.retrieve(MODEL); st.settings.keyOk = true; saveSettings(); setKeyStatus("ok"); toast("Clé connectée ✓ L'analyse IA est prête."); success(); }
-  catch (e) { setKeyStatus(A && e instanceof A.AuthenticationError ? "bad" : "saved"); toast(apiErrorText(e, A) || "Test interrompu"); }
+$("#modelDl").addEventListener("click", async () => {
+  $("#modelDl").disabled = true;
+  try { await getClassifier(); toast("Modèle prêt : l'analyse fonctionne maintenant même hors connexion"); success(); }
+  catch { toast("Téléchargement impossible : vérifie ta connexion internet."); }
+  finally { $("#modelDl").disabled = false; onModelProgress(); }
 });
-$("#keyDel").addEventListener("click", () => { st.settings.apiKey = ""; st.settings.keyOk = false; saveSettings(); $("#apiKey").value = ""; setKeyStatus("none"); toast("Clé supprimée de cet appareil"); });
-$("#effort").addEventListener("change", e => { st.settings.effort = e.target.value; saveSettings(); });
 $("#theme").addEventListener("change", e => { st.settings.theme = e.target.value; saveSettings(); applyTheme(); });
 function applyTheme() {
   const t = st.settings.theme; if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
@@ -789,6 +973,14 @@ function demoMeals() {
   return out;
 }
 
+function initInstallBanner() {
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+  const b = $("#installBanner"); if (!b) return;
+  b.hidden = !(ios && !standalone && !lsGet("ibClosed", false));
+  $("#ibClose").addEventListener("click", () => { b.hidden = true; lsSet("ibClosed", true); });
+}
+
 /* ---------- démarrage ---------- */
 async function start() {
   splash();
@@ -797,7 +989,8 @@ async function start() {
   applyTheme(); fillProfile(); setMealType(autoMealType()); setScanNow();
   go(location.hash.slice(1) || "today", false);
   setTimeout(movePill, 350); document.fonts?.ready.then(movePill);
-  if (hasKey()) loadSDK().catch(() => { });
+  initInstallBanner();
+  if (lsGet("modelReady", false)) setTimeout(() => getClassifier().catch(() => { }), 1500);
   let lastToday = todayKey();
   document.addEventListener("visibilitychange", () => { if (document.hidden) return; const tk = todayKey(); if (tk !== lastToday) { if (st.view === lastToday) st.view = tk; lastToday = tk; } renderAll(); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);

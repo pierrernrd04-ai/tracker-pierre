@@ -487,6 +487,10 @@ textarea.input{resize:vertical;min-height:72px}
 <main class="wrap">
   <!-- TODAY -->
   <section class="view" id="v-today" aria-label="Journée">
+    <div class="card keycard" id="installBanner" hidden style="margin-bottom:16px">
+      <h3>Installe Fox sur ton écran d'accueil <button class="btn ghost sm" id="ibClose" type="button" aria-label="Fermer">✕</button></h3>
+      <p class="note" style="margin:0">Touche <b>Partager</b> (ou « ••• » puis Partager), puis <b>Sur l'écran d'accueil</b> et <b>Ajouter</b>. Fox s'ouvrira comme une vraie app, sans compte.</p>
+    </div>
     <div class="hello">
       <div><div class="eyebrow" id="dayLabel">—</div><h1 id="greet">Bonjour.</h1></div>
       <div class="chips"><button class="chip" id="backToday" hidden>↺ Aujourd'hui</button><span class="chip hot" id="streakChip"><span class="flame">🔥</span> 0 j</span><span class="chip" id="demoChip" hidden>Exemple</span></div>
@@ -536,10 +540,8 @@ textarea.input{resize:vertical;min-height:72px}
   <section class="view" id="v-scan" aria-label="Scanner">
     <div class="hello"><div><div class="eyebrow">Analyse nutritionnelle IA</div><h1>Scanne ton <em>assiette</em>.</h1></div></div>
     <div class="card keycard" id="keyCard" hidden style="margin-bottom:16px">
-      <h3>Active l'analyse IA</h3>
-      <p style="margin:0" class="note">L'analyse des photos utilise Claude, via ta propre clé API Anthropic (payée à l'usage, quelques centimes par photo).</p>
-      <ol><li>Ouvre <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> et crée une clé.</li><li>Ajoute un peu de crédit et fixe une limite de dépense.</li><li>Colle la clé dans l'onglet <b>Profil</b>.</li></ol>
-      <div class="row"><a class="btn primary sm" href="https://claude.ai/artifact/YJDtnyi6rp4uYNSMu1CLJU" target="_blank" rel="noopener">Version gratuite (compte Claude)</a><button class="btn sm" data-go="profile">J'ai une clé API</button></div>
+      <h3>Analyse 100 % gratuite, sur ton iPhone</h3>
+      <p style="margin:0" class="note">Pas de compte, pas de clé : le renard reconnaît ton plat directement sur ton téléphone, et tes photos ne sont jamais envoyées. La première analyse télécharge le modèle (60 Mo, une seule fois), idéalement en Wi-Fi.</p>
     </div>
     <div class="grid g-scan">
       <div class="grid" style="gap:14px">
@@ -567,27 +569,27 @@ textarea.input{resize:vertical;min-height:72px}
           <div class="field"><label for="mealDate">Date</label><input class="input" type="date" id="mealDate"></div>
           <div class="field"><label for="mealTime">Heure</label><input class="input" type="time" id="mealTime"></div>
         </div>
-        <div class="field"><label for="hint">Précisions (facultatif)</label>
+        <div class="field" hidden><label for="hint">Précisions (facultatif)</label>
           <textarea class="input" id="hint" placeholder="Ex. : cuit à l'huile d'olive, 2 c. à soupe ; riz complet ; sans sauce…"></textarea></div>
         <div class="row">
           <button class="btn primary" id="analyzeBtn" style="flex:1" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Analyser la photo</button>
-          <button class="btn" id="textOnlyBtn">Sans photo</button>
+          <button class="btn" id="textOnlyBtn">Saisie manuelle</button>
         </div>
       </div>
       <div class="card" id="resultCard" aria-live="polite">
         <div class="empty" id="resultEmpty">
           <svg class="fox" viewBox="0 0 64 64" aria-hidden="true"><path d="M4 6 L20 22 L32 18 L44 22 L60 6 L57 34 Q52 52 32 60 Q12 52 7 34 Z" fill="var(--fox)"/><path d="M15 38 Q32 31 49 38 Q44 51 32 56 Q20 51 15 38Z" fill="var(--surface)"/><circle cx="23" cy="32" r="3" fill="var(--ink)"/><circle cx="41" cy="32" r="3" fill="var(--ink)"/><path d="M28.5 44 L35.5 44 L32 48Z" fill="var(--ink)"/></svg>
           <b>Le renard attend ton assiette</b>
-          <span>Il identifie chaque aliment, estime le poids des portions, repère les graisses cachées et calcule calories (±50 kcal), macros, fibres, vitamines et minéraux.</span>
+          <span>Il reconnaît ton plat directement sur l'iPhone, estime la portion et calcule calories, macros, fibres, vitamines et minéraux. Tu ajustes les grammes et tu ajoutes ce qui manque.</span>
         </div>
         <div class="thinking" id="thinking" hidden>
           <div class="loader"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg><svg class="fx" viewBox="0 0 64 64"><path d="M4 6 L20 22 L32 18 L44 22 L60 6 L57 34 Q52 52 32 60 Q12 52 7 34 Z" fill="var(--fox)"/><path d="M15 38 Q32 31 49 38 Q44 51 32 56 Q20 51 15 38Z" fill="var(--surface)"/><circle cx="23" cy="32" r="3" fill="var(--ink)"/><circle cx="41" cy="32" r="3" fill="var(--ink)"/></svg></div>
           <b>Analyse en cours… <span class="num note" id="elapsed">0 s</span></b>
           <div class="progress"><i id="prog"></i></div>
           <div class="steps" id="steps">
-            <div><i></i>Identification des aliments</div>
-            <div><i></i>Estimation des portions (g)</div>
-            <div><i></i>Graisses de cuisson &amp; sauces</div>
+            <div><i></i>Chargement du modèle IA</div>
+            <div><i></i>Analyse de l'image</div>
+            <div><i></i>Identification du plat</div>
             <div><i></i>Calcul nutritionnel (CIQUAL / USDA)</div>
             <div><i></i>Contrôle de cohérence Atwater</div>
           </div>
@@ -628,7 +630,7 @@ textarea.input{resize:vertical;min-height:72px}
       <div class="grid g-rep">
         <div class="card">
           <h3>Bilan du nutritionniste <button class="btn primary sm" id="aiReportBtn">Générer le bilan</button></h3>
-          <div class="ai-report" id="aiReport"><span class="note">Le renard analyse ta période : équilibre des macros, fibres et micronutriments, régularité. Il te donne 3 actions concrètes.</span></div>
+          <div class="ai-report" id="aiReport"><span class="note">Le renard analyse ta période sur ton appareil : énergie, protéines, fibres, sucres, sel, micronutriments et régularité. Il te donne 3 actions concrètes.</span></div>
         </div>
         <div class="card"><h3>Aliments les plus fréquents</h3><div class="top-foods" id="topFoods"></div></div>
       </div>
@@ -660,12 +662,9 @@ textarea.input{resize:vertical;min-height:72px}
       </form>
       <div class="grid" style="gap:16px">
         <div class="card">
-          <h3>Clé API Anthropic <span class="status" id="keyStatus" style="color:var(--muted)">Non configurée</span></h3>
-          <div class="keyrow"><input class="input" id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn sm" id="keyShow" type="button" aria-label="Afficher la clé">👁</button></div>
-          <div class="row" style="margin-top:10px"><button class="btn primary sm" id="keySave" type="button">Enregistrer &amp; tester</button><button class="btn ghost sm" id="keyDel" type="button">Supprimer</button></div>
-          <p class="note" style="margin:10px 0 0">La clé reste uniquement sur cet appareil et n'est envoyée qu'à api.anthropic.com. Crée une clé dédiée avec une limite de dépense sur <a href="https://console.anthropic.com/settings/limits" target="_blank" rel="noopener" style="color:var(--fox)">console.anthropic.com</a>.</p>
-          <div class="sep"></div>
-          <div class="field"><label for="effort">Précision de l'analyse</label><select class="input" id="effort"><option value="high">Expert (plus précis, ~20–40 s)</option><option value="medium">Rapide (~10–20 s)</option></select></div>
+          <h3>Analyse IA sur l'appareil <span class="status" id="modelStatus" style="color:var(--muted)">Pas encore téléchargé</span></h3>
+          <p class="note" style="margin-top:0">Gratuite, sans compte ni clé. Le modèle reconnaît 101 plats ; tu corriges ou complètes en ajoutant des aliments. Les photos restent sur ton iPhone.</p>
+          <button class="btn primary sm" id="modelDl" type="button">Télécharger le modèle maintenant (60 Mo)</button>
         </div>
         <div class="card" id="installCard">
           <h3>Installer sur iPhone</h3>
