@@ -60,7 +60,7 @@ self.addEventListener('fetch', e => {
   if (u.pathname.startsWith(BASE + '_blob/')) { e.respondWith(blob(u.pathname.slice(BASE.length + 6)).catch(() => new Response('', { status: 404 }))); return; }
   if (u.pathname.startsWith(BASE + 'ai/')) { e.respondWith(caches.open('rp-ai-v1').then(async c => (await c.match(e.request)) || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }))); return; }
   if (e.request.mode === 'navigate') {
-    const key = u.pathname.endsWith('widgets.html') ? BASE + 'widgets.html' : BASE;
+    const key = u.pathname.endsWith('widgets.html') ? BASE + 'widgets.html' : u.pathname.endsWith('emotion.html') ? BASE + 'emotion.html' : BASE;
     e.respondWith(fetch(e.request).then(r => { if (r.ok) { const c = r.clone(); caches.open(SHELL).then(s => s.put(key, c)); } return r; })
       .catch(async () => (await (await caches.open(SHELL)).match(key)) || new Response('Hors ligne', { status: 503 })));
   }

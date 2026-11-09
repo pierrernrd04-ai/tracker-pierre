@@ -2983,6 +2983,13 @@ html.wmode .toast{bottom:84px}
 .ai-leg i{width:11px;height:11px;border-radius:3px;border:2px solid var(--accent)}
 .ai-leg i.p{border-color:#5BE3FF}.ai-leg i.o{border-color:#FFB547;border-style:dashed}
 .ai-scw{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:4px}
+
+/* v28 : page Do It Émotion seule */
+html.solo-emo .nav,html.solo-emo .fab,html.solo-emo #soberPill,html.solo-emo #btn-settings{display:none!important}
+html.solo-emo .app{padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.solo-link{border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line))}
+.solo-link .steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px;line-height:1.45}
+.solo-link a{color:var(--accent);font-weight:700}
 </style>
 <div id="rp-lock" hidden><div class="rl-in">
 <img src="icon-192.png" alt="" width="84" height="84" class="rl-logo">
@@ -3021,7 +3028,7 @@ html.wmode .toast{bottom:84px}
 <script>
 window.RP_STANDALONE=true;
 (function(){
-var LSK='rp-vault-key',BUILD='20261031165043';
+var LSK='rp-vault-key',BUILD='20261109094212';
 function $(s){return document.querySelector(s)}
 function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
@@ -7302,6 +7309,39 @@ Object.assign(ACT,{
       const a=aiPack(r.m);if(!r.keep)a.x=1;const dirty=new Set();aiStoreMeta(pk,a,dirty);aiFlush(dirty);aiFree(r);const st=$('#aiSheetSt');if(st)st.innerHTML=aiSheetStats(a);t.innerHTML=`${ic('repeat',14)} Relancer`}
     catch(e){t.innerHTML=lab;toast('L\'analyse n\'a pas pu se faire sur cet appareil.')}t.disabled=false}
 });
+
+/* =================== v28 : « Do It Émotion », l'onglet Émotion seul (page emotion.html du site GitHub) ===================
+   Même coffre chiffré, même mot de passe, mêmes données : la synchro GitHub relie cette page au tracker complet. */
+const SOLO=window.RP_SOLO==='emo';
+if(SOLO){
+  document.documentElement.classList.add('solo-emo');
+  {const b=document.querySelector('.brand b');if(b)b.textContent='Do It · Émotion'}
+  S.tab='emo';
+  {const _rSolo=render;render=function(){S.tab='emo';return _rSolo.apply(this,arguments)}}
+  {const _tSolo=ACT.tab;ACT.tab=function(t,e){const v=t&&t.dataset&&t.dataset.v;if(v&&v!=='emo')return;return _tSolo.call(this,t,e)}}
+  showSplash=function(){};motivReady=function(){return false};checkReminders=function(){};checkMilestone=function(){};
+  /* carte « Relier à ton tracker » tant que la synchro n'est pas branchée sur cet appareil */
+  const soloLink=()=>!window.RP_STANDALONE||SY.tok?'':`<section class="card solo-link" id="soloLink">
+    <h2><span class="h-left">${ic('sync',18)} Relier à ton tracker</span></h2>
+    <p class="hint" style="margin:0 0 10px">Pour retrouver ici tes rendez-vous, tes séances et tes notes, et renvoyer vers ton tracker ce que tu écris ici.</p>
+    <ol class="steps"><li>Ouvre ton tracker : <b>Mes apps › Tes données</b>, touche <b>« Relier Do It Émotion »</b>.</li><li>Reviens ici, colle le code et touche <b>Relier</b>.</li></ol>
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) auto;margin-top:10px"><input class="inp" id="syTok" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Colle le code ici"><button class="btn" data-a="syConnect">Relier</button></div>
+    <p class="hint" style="margin:10px 0 0">Ton tracker n'a pas la synchro ? <a href="${SY_NEW}" target="_blank" rel="noopener">Crée un jeton GitHub</a> (case « gist » cochée) et colle-le ici.</p></section>`;
+  {const _vSolo=vEmo;vEmo=function(){return soloLink()+_vSolo.apply(this,arguments)}}
+  if(window.RP_STANDALONE){
+    /* première synchro de cette page : on récupère toujours les données du compte (jamais l'inverse),
+       pour ne pas écraser le tracker avec l'ancienne copie du coffre */
+    {const _snSolo=syncNow;syncNow=function(mode){if(!mode&&!SY.busy&&!lsg(SYNC.init)){SY.mt={};syMtSave();mode='pull'}return _snSolo.call(this,mode)}}
+    {const _suSolo=syUi;syUi=function(){_suSolo.apply(this,arguments);if(SY.tok&&document.getElementById('soloLink')&&!isTyping())render()}}
+  }
+}
+/* tracker complet : bouton qui copie le code de liaison pour Do It Émotion */
+if(window.RP_STANDALONE&&!SOLO&&!window.RP_WIDGETS){
+  {const _scEmo=syncCard;syncCard=function(){let h=_scEmo.apply(this,arguments);const off='<button class="btn sm ghost" data-a="syOff">';
+    if(SY.tok&&!SY.ask&&h.includes(off))h=h.replace(off,`<button class="btn sm ghost" data-a="syEmo">${ic('lotus',15)} Relier Do It Émotion</button>`+off);return h};LIVE.sync=syncCard}
+  Object.assign(ACT,{async syEmo(){if(!SY.tok){toast('Active d\'abord la synchronisation');return}const ok=await copyText(SY.tok);
+    toast(ok?'Code copié : colle-le dans Do It Émotion':'Copie bloquée');if(!ok)prompt('Copie ce code :',SY.tok)}});
+}
 
 /* ---------- boot ---------- */
 $('#btn-settings').innerHTML=ic('cog',18);$('#btn-prev').innerHTML=ic('left',18);$('#btn-next').innerHTML=ic('right',18);
